@@ -1,6 +1,13 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
+import { default as jsonc, parseForESLint, configs } from "eslint-plugin-jsonc";
 
+
+const parsers = {
+  'jsonc-eslint-parser': {
+    parseForESLint
+  }
+}
 
 module.exports = {
   languageOptions: {
@@ -11,7 +18,7 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    parser: "@typescript-eslint/parser",
+    jsonc: { ...jsonc, parsers },
     files: ["**/*.ts", "**/*.tsx"],
     parserOptions: {
       ecmaFeatures: {
