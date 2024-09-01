@@ -13,6 +13,13 @@ module.exports = {
     },
     parser: "@typescript-eslint/parser",
     files: ["**/*.ts", "**/*.tsx"],
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+      ecmaVersion: 12,
+      sourceType: 'module',
+    },
   },
   ignores: [
     "node_modules/**",
@@ -27,11 +34,5 @@ module.exports = {
   rules: {
     semi: ["warn", "always"]
   },
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 12,
-    sourceType: 'module',
-  },
+
 }
