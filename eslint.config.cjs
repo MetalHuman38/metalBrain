@@ -10,9 +10,10 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
+    parser: '@typescript-eslint/parser',
     parserOptions: {
       ecmaFeatures: {
-        jsx: true,
+        jsx: "true",
       },
       ecmaVersion: 12,
       sourceType: 'module',
