@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "allowSyntheticDefaultImports": true,
+    "noEmit": false, // or just remove this line
+    "outDir": "./dist", // Specify an output directory for the compiled files
+    "rootDir": "./src/server" // Specify the root directory of input files
+  },
+  "include": ["src/server/**/*.ts"]
+}
