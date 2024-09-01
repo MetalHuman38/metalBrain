@@ -1,6 +1,6 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
-const parse = require("./customParser.cjs");
+const { default: ts } = require('typescript');
 
 module.exports = {
   languageOptions: {
@@ -11,13 +11,18 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    parser: parse,
+    parser: "@babel/eslint-parser",
     parserOptions: {
       ecmaFeatures: {
         jsx: "true",
+        tsx: "true",
+        ts: "true",
+        modules: "true",
       },
-      ecmaVersion: 12,
+      ecmaVersion: "latest",
       sourceType: 'module',
+      project: ["./tsconfig.json, ./tsconfig.node.json, ./tsconfig.app.json"],
+      tsconfigRootDir: __dirname, // ** This is the default value ** //
     },
   },
   ignores: [
@@ -30,6 +35,7 @@ module.exports = {
   files: ["**/*.ts", "**/*.tsx"],
   plugins: {
     reactrefresh: reactRefresh,
+    '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
   },
   rules: {
     semi: ["warn", "always"]
