@@ -1,3 +1,4 @@
+const { parse } = require('dotenv');
 const globals = require('globals');
 
 module.exports = {
@@ -8,7 +9,9 @@ module.exports = {
       ...globals.browser,
       ...globals.node,
       myCustomGlobal: "readonly"
-    }
+    },
+    parser: "@typescript-eslint/parser",
+    files: ["**/*.ts", "**/*.tsx"],
   },
   ignores: [
     "node_modules/**",
@@ -17,12 +20,10 @@ module.exports = {
     "**/temp.js",
     "config/*"
   ],
-  parser: '@typescript-eslint/parser',
   plugins: ['react-refresh', '@typescript-eslint'],
   rules: {
     semi: ["warn", "always"]
   },
-  files: ["**/*.ts", "**/*.tsx"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
