@@ -10,7 +10,6 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    files: ["**/*.ts", "**/*.tsx"],
     parserOptions: {
       ecmaFeatures: {
         jsx: true,
@@ -26,6 +25,7 @@ module.exports = {
     "**/temp.js",
     "config/*"
   ],
+  files: ["**/*.ts", "**/*.tsx"],
   plugins: {
     reactrefresh: reactRefresh,
   },
