@@ -1,11 +1,10 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
-import { default as jsonc, parseForESLint, configs } from "eslint-plugin-jsonc";
-
+const jsonc = require("eslint-plugin-jsonc");
 
 const parsers = {
   'jsonc-eslint-parser': {
-    parseForESLint
+    parseForESLint: jsonc.parseForESLint
   }
 }
 
