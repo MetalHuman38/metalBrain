@@ -17,7 +17,6 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    jsonc: { ...jsonc, parsers },
     files: ["**/*.ts", "**/*.tsx"],
     parserOptions: {
       ecmaFeatures: {
@@ -40,5 +39,6 @@ module.exports = {
   rules: {
     semi: ["warn", "always"]
   },
+  jsonc: { ...jsonc, parsers },
 
 }
