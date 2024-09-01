@@ -1,9 +1,6 @@
 const globals = require('globals');
-const prettierConfig = require('eslint-config-prettier');
-
 
 module.exports = {
-  prettierConfig,
   languageOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
