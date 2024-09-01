@@ -11,7 +11,7 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    parser: parse(),
+    parser: parse,
     parserOptions: {
       ecmaFeatures: {
         jsx: "true",
