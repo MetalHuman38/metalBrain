@@ -1,6 +1,6 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
-const { default: ts } = require('typescript');
+const typescriptParser = require('@typescript-eslint/parser')
 
 module.exports = {
   languageOptions: {
@@ -11,7 +11,7 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    parser: "@babel/eslint-parser",
+    parser: typescriptParser,
     parserOptions: {
       ecmaFeatures: {
         jsx: "true",
@@ -21,7 +21,6 @@ module.exports = {
       },
       ecmaVersion: "latest",
       sourceType: 'module',
-      project: ["./tsconfig.json, ./tsconfig.node.json, ./tsconfig.app.json"],
       tsconfigRootDir: __dirname, // ** This is the default value ** //
     },
   },
