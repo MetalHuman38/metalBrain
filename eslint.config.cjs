@@ -1,12 +1,5 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
-const jsonc = require("eslint-plugin-jsonc");
-
-const parsers = {
-  'jsonc-eslint-parser': {
-    parseForESLint: jsonc.parseForESLint
-  }
-}
 
 module.exports = {
   languageOptions: {
@@ -34,11 +27,11 @@ module.exports = {
     "config/*"
   ],
   plugins: {
-    reactrefresh: reactRefresh
+    reactrefresh: reactRefresh,
   },
   rules: {
     semi: ["warn", "always"]
   },
-  jsonc: { ...jsonc, parsers },
+
 
 }
