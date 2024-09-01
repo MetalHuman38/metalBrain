@@ -1,13 +1,9 @@
 const globals = require('globals');
+import prettierConfig from 'eslint-config-prettier';
+
 
 module.exports = {
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'airbnb',
-    'plugin:prettier/recommended',
-  ],
+  prettierConfig,
   languageOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
