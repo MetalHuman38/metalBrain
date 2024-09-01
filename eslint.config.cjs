@@ -1,5 +1,6 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
+const parse = require("./customParser.cjs");
 
 module.exports = {
   languageOptions: {
@@ -10,7 +11,7 @@ module.exports = {
       ...globals.node,
       myCustomGlobal: "readonly"
     },
-    parser: '@typescript-eslint/parser',
+    parser: parse(),
     parserOptions: {
       ecmaFeatures: {
         jsx: "true",
