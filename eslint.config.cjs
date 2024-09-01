@@ -1,5 +1,6 @@
-const { parse } = require('dotenv');
 const globals = require('globals');
+const reactRefresh = require('react-refresh');
+
 
 module.exports = {
   languageOptions: {
@@ -20,7 +21,9 @@ module.exports = {
     "**/temp.js",
     "config/*"
   ],
-  plugins: ['react-refresh', '@typescript-eslint'],
+  plugins: {
+    reactrefresh: reactRefresh
+  },
   rules: {
     semi: ["warn", "always"]
   },
