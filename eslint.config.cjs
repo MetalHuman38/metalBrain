@@ -10,7 +10,13 @@ module.exports = {
       myCustomGlobal: "readonly"
     }
   },
-  ignorePatterns: ['node_modules', 'build', 'dist'],
+  ignores: [
+    "node_modules/**",
+    "build/**",
+    "dist/**",
+    "**/temp.js",
+    "config/*"
+  ],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh', '@typescript-eslint'],
   rules: {
