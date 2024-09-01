@@ -1,4 +1,4 @@
-const globals = require('eslint-plugin-react').environments.globals;
+const globals = require('globals');
 
 module.exports = {
   extends: [
