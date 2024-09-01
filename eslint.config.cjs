@@ -1,4 +1,4 @@
-const globals = require('globals');
+import globals from 'globals';
 import prettierConfig from 'eslint-config-prettier';
 
 
