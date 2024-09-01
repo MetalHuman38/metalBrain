@@ -18,7 +18,7 @@ module.exports = {
     semi: 'error',
     'prefer-const': 'error',
   },
-  files: ["src/server/**/*.ts", "src/client/**/*.tsx"],
+  files: ["**/*.ts", "**/*.tsx"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
