@@ -1,6 +1,8 @@
 # .env file
 .env
 
+.generate-jwt-secret.js
+
 # Logs
 logs
 *.log
