@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import serverENV from "../loader/config/serverENV.js";
 import setUpMiddlewares from "./middlewares/cors.js";
 import router from "./router/router.js";
+import errorHandler from "../services/errorhandler.js";
 
 // ** Load the .env file into process.env ** //
 dotenv.config();
@@ -50,6 +51,8 @@ export default async function ({ app }: { app: Express }) {
       ),
     ),
   );
+
+  app.use(errorHandler);
 
   return app;
 }
