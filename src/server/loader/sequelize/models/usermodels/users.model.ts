@@ -31,16 +31,6 @@ interface UserCreationAttributes extends Optional<UserAttributes, "id"> {
   username: string;
   email: string;
   bio: string;
-  joined_date: Date;
-  last_login: Date;
-  last_logout: Date;
-  last_activity: Date;
-  role: string;
-  avatarUrl: string;
-  profile_picture: string;
-  user_registration_id: number;
-  created_at: Date;
-  updated_at: Date;
 }
 
 const sequelize = sequelizeConInstance();
@@ -185,7 +175,7 @@ users.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "UserRegistration",
+        model: "user_registrations",
         key: "id",
       },
       onUpdate: "CASCADE",

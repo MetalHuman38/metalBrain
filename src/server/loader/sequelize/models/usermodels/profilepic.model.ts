@@ -73,7 +73,7 @@ profile_pictures.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "User", // Name of the users table
+        model: "users", // Name of the users table
         key: "id",
       },
       onUpdate: "CASCADE",
