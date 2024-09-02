@@ -49,7 +49,7 @@ async function StartServer() {
     anyncLocalStorage.run(id, () => {
       logWithId(`New connection from client!`);
       socket.on("close", () => {
-        logWithId(`Client Connection closed!`);
+        logWithId(`Client Connection closed! Waiting for new connection!`);
       });
     });
   });
