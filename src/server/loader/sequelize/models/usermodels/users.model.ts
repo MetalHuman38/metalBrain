@@ -4,8 +4,8 @@ import follows from "./follow.model.js";
 
 interface UserAttributes {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   username: string;
   email: string;
   password: string;
@@ -26,8 +26,8 @@ interface UserAttributes {
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   username: string;
   email: string;
   bio: string;
@@ -40,8 +40,8 @@ class users
   implements UserAttributes
 {
   declare id: number;
-  declare firstName: string;
-  declare lastName: string;
+  declare first_name: string;
+  declare last_name: string;
   declare username: string;
   declare email: string;
   declare password: string;
@@ -87,11 +87,11 @@ users.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    firstName: {
+    first_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    lastName: {
+    last_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },

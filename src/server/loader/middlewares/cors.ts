@@ -32,7 +32,6 @@ export default async function ({ app }: { app: express.Application }) {
   app.use(express.urlencoded({ extended: true }));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(morgan("dev"));
 
