@@ -2,6 +2,7 @@
 export type IUserPayload = {
   id: number;
   role: string;
+  signOptins?: Partial<string>;
 };
 
 export type INewUser = {

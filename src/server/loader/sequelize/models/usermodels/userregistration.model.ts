@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { DataTypes, Model, Optional } from "sequelize";
 import { generateAvatarUrl } from "../../../utils/avatar.js";
 import { sequelizeConInstance } from "../../sequelizeCon.js";
@@ -14,12 +13,7 @@ interface UserRegistrationsAttributes {
 }
 
 interface UserRegistrationsCreationAttributes
-  extends Optional<UserRegistrationsAttributes, "id"> {
-  new_user: string;
-  username: string;
-  email: string;
-  password: string;
-}
+  extends Optional<UserRegistrationsAttributes, "id"> {}
 
 const sequelize = sequelizeConInstance();
 
@@ -36,24 +30,6 @@ class user_registrations
   declare email: string;
   declare password: string;
   declare created_at: Date;
-
-  // ** Declare the static method loginUser ** //
-  static async loginUser(
-    email: string,
-    password: string,
-  ): Promise<user_registrations | null> {
-    return await this.findOne({ where: { email: email, password: password } });
-  }
-
-  // ** Declare the static method logout user ** //
-  static async logoutUser(email: string): Promise<void> {
-    try {
-      await this.findOne({ where: { email: email } });
-    } catch (error) {
-      console.error("Error logging out user:", error);
-      throw new Error("Error logging out user");
-    }
-  }
 }
 
 user_registrations.init(
@@ -86,24 +62,11 @@ user_registrations.init(
   },
   {
     sequelize,
-    tableName: "UserRegistration",
+    tableName: "user_registrations",
     freezeTableName: true,
     timestamps: false,
   },
 );
-
-user_registrations.beforeCreate(async (user: user_registrations) => {
-  try {
-    if (user) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(user.password, salt);
-      user.password = hashedPassword;
-    }
-  } catch (error) {
-    console.error("Error hashing password", error);
-    throw new Error("Error hashing password");
-  }
-});
 
 user_registrations.afterCreate(
   async (user: user_registrations & { new_user: string }) => {
@@ -119,8 +82,8 @@ user_registrations.afterCreate(
         const avatar = generateAvatarUrl(firstName, lastName);
 
         await users.upsert({
-          firstName: firstName,
-          lastName: lastName,
+          first_name: firstName,
+          last_name: lastName,
           username: user.username,
           email: user.email,
           password: user.password,
@@ -146,37 +109,6 @@ user_registrations.afterCreate(
     }
   },
 );
-
-user_registrations.loginUser = async function (
-  email: string,
-  password: string,
-): Promise<user_registrations | null> {
-  try {
-    const user = await this.findOne({ where: { email: email } });
-    if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        return user;
-      } else {
-        throw new Error("Invalid credentials");
-      }
-    } else {
-      throw new Error("Invalid credentials");
-    }
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    throw new Error("Error logging in user");
-  }
-};
-
-user_registrations.logoutUser = async function (email: string): Promise<void> {
-  try {
-    await this.findOne({ where: { email: email } });
-  } catch (error) {
-    console.error("Error logging out user:", error);
-    throw new Error("Error logging out user");
-  }
-};
 
 await sequelize
   .sync({ alter: false })

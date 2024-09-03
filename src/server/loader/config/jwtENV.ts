@@ -23,6 +23,7 @@ const jwtENV = load({
   JWT_USER_REFRESH_COOKIE_EXPIRES_IN: String,
   JWT_USER_REFRESH_COOKIE_SECURE: Boolean,
   JWT_USER_REFRESH_COOKIE_HTTP_ONLY: Boolean,
+  JWT_SIGN_OPTIONS: String,
 });
 
 // ** Assert that the environment variables are defined ** //
@@ -58,6 +59,7 @@ assert(
   jwtENV.JWT_USER_REFRESH_COOKIE_HTTP_ONLY,
   "JWT User Refresh Cookie HTTP Only is required",
 );
+assert(jwtENV.JWT_SIGN_OPTIONS, "JWT Sign Options is required");
 
 const {
   JWT_USER_SECRET,
@@ -77,6 +79,7 @@ const {
   JWT_USER_REFRESH_COOKIE_EXPIRES_IN,
   JWT_USER_REFRESH_COOKIE_SECURE,
   JWT_USER_REFRESH_COOKIE_HTTP_ONLY,
+  JWT_SIGN_OPTIONS,
 } = jwtENV;
 
 export default {
@@ -98,4 +101,5 @@ export default {
   JWT_USER_REFRESH_COOKIE_EXPIRES_IN,
   JWT_USER_REFRESH_COOKIE_SECURE,
   JWT_USER_REFRESH_COOKIE_HTTP_ONLY,
+  JWT_SIGN_OPTIONS,
 };
