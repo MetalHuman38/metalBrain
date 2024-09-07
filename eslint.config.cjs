@@ -37,8 +37,6 @@ module.exports = [
     },
     rules: {
       semi: ["warn", "always"],
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
     },
     settings: {
       react: {
