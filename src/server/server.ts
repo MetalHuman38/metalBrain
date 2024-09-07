@@ -17,7 +17,7 @@ async function StartServer() {
       origin: "http://localhost:5173",
       credentials: true,
       optionsSuccessStatus: 200,
-    }),
+    })
   );
 
   app.use(
@@ -30,7 +30,7 @@ async function StartServer() {
       },
       level: serverENV.COMPRESSION_LEVEL,
       threshold: serverENV.COMPRESSION_THRESHOLD,
-    }),
+    })
   );
 
   (await import("./loader/index.js")).default({ app });
@@ -62,7 +62,7 @@ async function StartServer() {
   let idleTimer = setTimeout(() => {
     server.close(() => {
       console.log(
-        "Server closed due to inactivity! Restart the server to continue!",
+        "Server closed due to inactivity! Restart the server to continue!"
       );
       process.exit(0);
     });
@@ -73,7 +73,7 @@ async function StartServer() {
     idleTimer = setTimeout(() => {
       server.close(() => {
         console.log(
-          "Server closed due to inactivity! Restart the server to continue!",
+          "Server closed due to inactivity! Restart the server to continue!"
         );
         process.exit(0);
       });
@@ -85,7 +85,7 @@ async function StartServer() {
     console.log(`Caught exception: ${err}\n` + `Exception origin: ${origin}`);
     server.close(() => {
       console.log(
-        "Server closed due to uncaught exception! Restart the server to continue!",
+        "Server closed due to uncaught exception! Restart the server to continue!"
       );
       process.exit(0);
     });

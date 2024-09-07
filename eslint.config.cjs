@@ -1,6 +1,7 @@
 const globals = require('globals');
 const reactRefresh = require('react-refresh');
 const typescriptParser = require('@typescript-eslint/parser')
+const pluginQuery = require('@tanstack/eslint-plugin-query')
 
 module.exports = {
   languageOptions: {
@@ -12,6 +13,7 @@ module.exports = {
       myCustomGlobal: "readonly"
     },
     parser: typescriptParser,
+    ...pluginQuery.configs['flat/recommended'],
     parserOptions: {
       ecmaFeatures: {
         jsx: "true",
@@ -37,7 +39,10 @@ module.exports = {
     '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
   },
   rules: {
-    semi: ["warn", "always"]
+    semi: ["warn", "always"],
+    "react-hooks/rules-of-hooks": "error",
+    // Enforces naming convention for hooks
+    "react-hooks/exhaustive-deps": "warn"
   },
 
 

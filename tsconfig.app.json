@@ -5,7 +5,13 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@lib/*": ["./lib/*"]
+    }
   },
-  "include": ["vite.config.ts, src/client/**/*.ts", "src/client/**/*.d.ts", "src/client/declaration.d.ts"]
+  "include": ["./src/client/**/*", "./src/components/**/*"],
+  "exclude": ["./src/server/**/*"]
 }

@@ -42,11 +42,11 @@ export class JwtTokenService implements IJwtHandler {
   jwtRefreshGenerator(payload: IUserPayload): string;
   jwtRefreshGenerator(
     payload: IUserPayload,
-    options: Partial<SignOptions>,
+    options: Partial<SignOptions>
   ): string;
   jwtRefreshGenerator(
     payload: IUserPayload,
-    options?: Partial<SignOptions>,
+    options?: Partial<SignOptions>
   ): string {
     try {
       const signOptions: SignOptions = {

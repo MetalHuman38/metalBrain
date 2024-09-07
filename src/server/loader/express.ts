@@ -8,7 +8,6 @@ import { fileURLToPath } from "url";
 import serverENV from "../loader/config/serverENV.js";
 import setUpMiddlewares from "./middlewares/cors.js";
 import router from "./router/router.js";
-import { globalErrorHandler } from "../services/globalErrorHandler.js";
 
 // ** Load the .env file into process.env ** //
 dotenv.config();
@@ -30,7 +29,7 @@ export default async function ({ app }: { app: Express }) {
   app.use(
     helmet({
       contentSecurityPolicy: false,
-    }),
+    })
   );
   app.use(helmet.noSniff());
   app.use(helmet.dnsPrefetchControl());
@@ -42,19 +41,15 @@ export default async function ({ app }: { app: Express }) {
     express.static(
       path.join(
         path.dirname(fileURLToPath(import.meta.url)),
-        "../../client/public",
-      ),
-    ),
+        "../../client/public"
+      )
+    )
   );
 
   // ** Set the morgan logger ** //
   app.use(morgan(serverENV.MORGAN || "dev"));
 
   app.use(router);
-
-  app.use((_req, res, next) => {
-    globalErrorHandler(res, next);
-  });
 
   return app;
 }
