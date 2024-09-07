@@ -53,7 +53,6 @@ module.exports = [
     },
     rules: {
       semi: ["warn", "always"],
-      "react-hooks/exhaustive-deps": "warn",
     },
   },
 ];
