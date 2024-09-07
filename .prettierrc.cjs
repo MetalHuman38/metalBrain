@@ -1,11 +1,14 @@
+const { useActionData } = require("react-router-dom");
 const { parser } = require("typescript-eslint");
 
 module.exports = {
   semi: true,
   singQuote: true,
-  trailingComma: 'all',
+  trailingComma: 'es5',
   printWidth: 80,
   tabWidth: 2,
+  useTabs: false,
+  useActionData: false,
   endOfLine: 'auto',
   bracketSpacing: true,
   jsxSingleQuote: false,

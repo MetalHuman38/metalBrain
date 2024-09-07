@@ -1,9 +1,21 @@
 import { Request, Response } from "express";
 import {
   LoginUserUseCase,
+  LogoutUserUseCase,
   RefreshTokenUseCase,
   RegisterUserUseCase,
+  VerifyUserUseCase,
 } from "../../userrepo/userUseCases.js";
+import {
+  BadRequestError,
+  ErrorCreatingUser,
+  InternalServerError,
+  InvalidCredentialsError,
+  NoRefreshTokenError,
+  NoTokenError,
+  UnauthorizedError,
+} from "../../utils/app-errors.js";
+import jwtENV from "../../config/jwtENV.js";
 
 // ** Register User Controller ** //
 export class RegisterUser {
@@ -13,7 +25,7 @@ export class RegisterUser {
     try {
       const { name, username, email, password } = req.body;
       if (!name || !username || !email || !password) {
-        throw new Error("Missing fields in request body");
+        throw new BadRequestError();
       }
       const user = await this.registerUserUseCase.RegisterUser({
         new_user: name,
@@ -24,19 +36,14 @@ export class RegisterUser {
       });
 
       if (!user) {
-        throw new Error("Error creating user");
+        throw new ErrorCreatingUser();
       }
-      res.cookie("token", user.token, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-      });
       res.status(201).json({
         message: "User created successfully",
         user: user.user,
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message || "An error occurred" });
+      throw new BadRequestError();
     }
   }
 }
@@ -49,27 +56,24 @@ export class LoginUser {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        throw new Error("Missing fields in request body");
+        throw new BadRequestError();
       }
       const user = await this.loginUserUseCase.LoginUser(email, password);
-
       if (!user) {
-        throw new Error("Error logging in user");
+        throw new InvalidCredentialsError();
       }
       res.cookie("token", user.token, {
-        httpOnly: true,
+        httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
-        secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        secure: jwtENV.JWT_COOKIE_SECURE,
+        maxAge: jwtENV.JWT_USER_MAX_AGE,
       });
 
       res.cookie("refreshToken", user.refreshToken, {
-        httpOnly: true,
+        httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
-        secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        secure: jwtENV.JWT_COOKIE_SECURE,
+        maxAge: jwtENV.JWT_USER_REFRESH_MAX_AGE,
       });
 
       res.status(200).json({
@@ -77,7 +81,7 @@ export class LoginUser {
         user: user.user,
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      throw new InvalidCredentialsError();
     }
   }
 }
@@ -90,30 +94,86 @@ export class RefreshToken {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        throw new Error("Missing fields in request body");
+        throw new NoRefreshTokenError();
       }
-      const user = await this.refreshTokenUseCase.RefreshToken(refreshToken);
+      const id = refreshToken.id;
+      const role = refreshToken.role;
+      if (!id || role) {
+        throw new UnauthorizedError();
+      }
 
+      const user = await this.refreshTokenUseCase.RefreshToken(id, role);
       if (!user) {
         throw new Error("Error refreshing token");
       }
 
-      res.cookie("refreshToken", user.refreshToken, {
-        httpOnly: true,
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
-        secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        secure: jwtENV.JWT_COOKIE_SECURE,
+        maxAge: jwtENV.JWT_USER_REFRESH_MAX_AGE,
       });
 
       res.status(200).json({
         message: "Token refreshed successfully",
-        user: user.user,
+        user: user.role,
       });
+    } catch (error: any) {
+      throw new NoRefreshTokenError();
+    }
+  }
+}
+
+// ** Logout User Controller ** //
+export class LogoutUser {
+  constructor(private logoutUserUseCase: LogoutUserUseCase) {}
+
+  async logoutUser(req: Request, res: Response) {
+    try {
+      const email = req.body.email;
+      if (!email) {
+        throw new BadRequestError();
+      }
+      const user = await this.logoutUserUseCase.LogoutUser(email);
+      if (!user) {
+        throw new InternalServerError();
+      }
+
+      res.clearCookie("token");
+      res.clearCookie("refreshToken");
+      res.status(200).json({ message: "User logged out successfully" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   }
 }
 
-export default { RegisterUser, LoginUser, RefreshToken };
+// ** Verify User Controller ** //
+export class VerifyUser {
+  constructor(private verifyUserUseCase: VerifyUserUseCase) {}
+
+  async verifyUser(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        throw new NoTokenError();
+      }
+      await this.verifyUserUseCase.VerifyUser(refreshToken);
+      if (!refreshToken) {
+        throw new NoTokenError();
+      }
+      res.status(200).json({ message: "User verified successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: "error verifying user" });
+      throw new Error("Something went wrong");
+    }
+  }
+}
+
+export default {
+  RegisterUser,
+  LoginUser,
+  RefreshToken,
+  LogoutUser,
+  VerifyUser,
+};

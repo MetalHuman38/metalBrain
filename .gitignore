@@ -1,5 +1,6 @@
 # .env file
 .env
+data.sql
 
 .generate-jwt-secret.js
 

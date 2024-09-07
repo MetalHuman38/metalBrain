@@ -12,25 +12,14 @@ function logErrorTofile(err: Error) {
 
 export async function globalErrorHandler(res: Response, next: NextFunction) {
   logErrorTofile(new Error("Global Error Handler"));
-  res.status(500).json({ error: "Something went wrong global error" });
+  res.status(500).send("Something went wrong");
   next();
 
   process.on("unhandledRejection", (reason, promise) => {
     console.error(`Unhandled Rejection at: ${promise} reason: ${reason}`);
     logErrorTofile(
-      new Error(`Unhandled Rejection at: ${promise} reason: ${reason}`),
+      new Error(`Unhandled Rejection at: ${promise} reason: ${reason}`)
     );
-    process.exit(1);
-  });
-
-  process.on("uncaughtException", (err) => {
-    console.error(`Uncaught Exception thrown: ${err}`);
-    logErrorTofile(new Error(`Uncaught Exception thrown: ${err}`));
-    process.exit(1);
-  });
-
-  process.on("uncaughtExceptionMonitor", (err, origin) => {
-    console.log("Uncaught Exception:", err, "Origin:", origin);
     process.exit(1);
   });
 

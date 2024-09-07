@@ -9,7 +9,7 @@ export interface IJwtHandler {
   jwtRefreshGenerator(payload: IUserPayload): string;
   jwtRefreshGenerator(
     payload: IUserPayload,
-    options: Partial<SignOptions>,
+    options: Partial<SignOptions>
   ): string;
 }
 

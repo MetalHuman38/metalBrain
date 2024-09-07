@@ -187,22 +187,26 @@
     @apply flex-none order-none items-center justify-center flex-grow-0 w-[24px] h-[24px] rotate-90;
   }
 
+  .arrow-icon-story {
+    @apply flex-none order-none items-center justify-center w-6 h-6 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-8 lg:h-8 xl:w-8 xl:h-8 rotate-90;
+  }
+
   .user-profile {
     @apply gap-2.5 w-[80px] h-[80px] rounded-full;
   }
 
   /* My Story */
   .my-story-text-container {
-    @apply flex items-center justify-between w-full h-auto mt-2;
+    @apply flex flex-1 items-center w-full;
   }
 
   .my-story-text {
-    @apply text-[14px] font-semibold text-center justify-center w-full right-4 leading-none max-w-[80px] whitespace-nowrap overflow-hidden text-ellipsis;
+    @apply text-xs font-semibold text-center justify-center w-full leading-none max-w-[100px] whitespace-nowrap overflow-hidden text-ellipsis;
   }
 
   /* Story + icon */
   .story-icon {
-    @apply absolute w-full h-full left-[30.5px] top-[20.5px];
+    @apply absolute w-full h-full left-[28.5px] top-[28.5px];
   }
 
   .story-cross-icon {
@@ -226,7 +230,7 @@
   }
 
   .user-story {
-    @apply flex items-center justify-center gap-2.5 w-[601px] h-[96px];
+    @apply flex gap-2.5 w-[601px] h-[96px];
   }
 
   .user-story-pic {
@@ -234,7 +238,7 @@
   }
 
   .user-story-card {
-    @apply flex items-center gap-2.5 w-[600px] h-[95px];
+    @apply flex flex-col items-center gap-2.5 w-[90px] h-[80px];
   }
 
   .user-story-image {
@@ -252,6 +256,40 @@
   .gradient-ring::before {
     @apply bg-gradient-to-r from-[#00FFA3] to-[#FF00FF] ring-4 ring-[#00FFA3] ring-offset-4 ring-offset-[#FF00FF] z-[-1];
   }
+
+  .cancel-story-container {
+    @apply absolute rounded-full top-6 left-6 flex items-center justify-center w-10 h-10 p-2 bg-slate-600 bg-opacity-85 cursor-pointer;
+  }
+
+  .cancel-icon {
+    @apply flex items-center justify-center cursor-pointer w-5 h-5;
+  }
+
+  .line {
+    @apply absolute w-[60%] h-0.5 bg-white;
+  }
+
+  .line-1 {
+    transform: rotate(45deg);
+  }
+
+  .line-2 {
+    transform: rotate(-45deg);
+  }
+
+  /**  Story Viewer **/
+  .story-viewer-container {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-dark-4 bg-opacity-75;
+  }
+
+  .story-viewer-inner {
+    @apply relative bg-dark-4 p-4 rounded-lg shadow-lg w-full max-w-[90%] h-[60%] md:w-full md:max-w-[80%] lg:max-w-[50%] flex flex-col items-center;
+  }
+
+  .story-preview-image {
+    @apply max-h-[60vh] w-auto object-cover object-top mb-4;
+  }
+
   /** Story css configure ending **/
 
   /** preview uploaded image before post **/

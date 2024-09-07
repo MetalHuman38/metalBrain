@@ -64,7 +64,7 @@ class users
 
   static async generateAvatarUrl(
     firstName: string,
-    lastName: string,
+    lastName: string
   ): Promise<string> {
     const name = `${firstName} ${lastName}`;
     const initials = name
@@ -159,7 +159,7 @@ users.init(
       allowNull: true,
     },
     role: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("user", "admin", "superadmin"),
       allowNull: false,
       defaultValue: "user",
     },
@@ -195,7 +195,7 @@ users.init(
     tableName: "users",
     freezeTableName: true,
     timestamps: false,
-  },
+  }
 );
 
 // User associations
