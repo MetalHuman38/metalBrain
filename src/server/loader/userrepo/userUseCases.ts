@@ -1,7 +1,7 @@
 import { IUserRepository } from "./IUserRepository.js";
 import { IPasswordHasher } from "../../services/index.js";
 import { IJwtHandler } from "../../services/jwtHandler.js";
-import { INewUser } from "./index.js";
+import { INewUser, IUser, IVerifyUser } from "./index.js";
 // ** Error Thrown are custom errors imported from app-errors.js ** //
 import {
   EmailAlreadyInUse,
@@ -108,9 +108,9 @@ export class LoginUserUseCase {
     email: string,
     password: string
   ): Promise<{
-    user: INewUser;
+    user: IUser;
     token: string;
-    refreshToken: string;
+    refreshtoken: string;
   }> {
     try {
       // ** Find User by Email ** //
@@ -128,26 +128,28 @@ export class LoginUserUseCase {
         throw new InvalidPasswordError();
       }
 
+      const user_role = user.role;
+
       // ** Generate Token ** //
       const token = this.jwtHandler.jwtGenerator({
         id: user.id as number,
-        role: "user",
+        role: user_role,
       });
       if (!token) {
         throw new ErrorGeneratingToken();
       }
 
       // ** Generate Refresh Token ** //
-      const refreshToken = this.jwtHandler.jwtRefreshGenerator({
+      const refreshtoken = this.jwtHandler.jwtRefreshGenerator({
         id: user.id as number,
-        role: "user",
+        role: user_role,
       });
-      if (!refreshToken) {
+      if (!refreshtoken) {
         throw new ErrorRefreshingToken();
       }
 
       // ** Return User, Token and Refresh Token ** //
-      return { user, token, refreshToken };
+      return { user, token, refreshtoken };
     } catch (error) {
       // ** Handle and log the error based on its type ** //
       if (
@@ -239,7 +241,7 @@ export class RefreshTokenUseCase {
 export class LogoutUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
-  async LogoutUser(email: string): Promise<INewUser> {
+  async LogoutUser(email: string): Promise<IUser> {
     try {
       const user = await this.userRepository.findUserByEmail(email);
       if (!user) {
@@ -262,22 +264,22 @@ export class VerifyUserUseCase {
     private userRepository: IUserRepository,
     private jwtHandler: IJwtHandler
   ) {}
-  async VerifyUser(token: string): Promise<void> {
+  async VerifyUser(id: string): Promise<IVerifyUser> {
     try {
       // ** Decode Token ** //
-      const decodedToken = this.jwtHandler.jwtVerifier(token);
-      if (!decodedToken) {
+      const token = this.jwtHandler.jwtVerifier(id);
+      if (!token) {
         throw new ErrorVerifyingToken();
       }
-      console.log("Decoded Token", decodedToken);
+      console.log("Decoded Token from verifyUsecase", token);
       // ** Retrieve User ID and Role From Token ** //
-      const user_id = decodedToken.id as number;
+      const user_id = token.id as number;
       if (!user_id) {
         throw new UnauthorizedError();
       }
-      console.log("User ID", user_id);
+      console.log("User ID from verifyUseCase Now", user_id);
       // ** Retrieve User Role From Token ** //
-      const user_role = decodedToken.role;
+      const user_role = token.role;
       if (!user_role) {
         throw new UnauthorizedError();
       }
@@ -291,7 +293,7 @@ export class VerifyUserUseCase {
       }
       console.log("User", user);
       // ** Return User ** //
-      return;
+      return { id: user_id, role: user_role, token: id };
     } catch (error) {
       // ** Handle and log specific errors ** //
       if (
@@ -304,6 +306,32 @@ export class VerifyUserUseCase {
       // ** Fallback for unexpected errors ** //
       console.error("Unexpected error during user verification:", error);
       throw new Error("An unexpected error occurred during user verification.");
+    }
+  }
+}
+
+// ** Get Current User Use Case ** //
+export class GetCurrentUserUseCase {
+  constructor(private userRepository: IUserRepository) {}
+
+  async GetCurrentUser(id: number): Promise<IUser> {
+    try {
+      // ** Find User by ID and Role ** //
+      const user = await this.userRepository.getCurrentUser(id);
+      if (!user?.id || user.role !== user.role) {
+        throw new UserWithIdNotFoundError();
+      }
+      // ** Return User ** //
+      return user;
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      if (error instanceof UserWithIdNotFoundError) {
+        console.error("User not found:", error.message);
+        throw error; // ** Rethrow specific errors to be handled by the caller ** //
+      }
+      // ** Fallback for unexpected errors ** //
+      console.error("Unexpected error during user lookup:", error);
+      throw new Error("An unexpected error occurred during user lookup.");
     }
   }
 }

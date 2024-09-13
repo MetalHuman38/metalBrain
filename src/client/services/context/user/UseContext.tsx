@@ -1,5 +1,16 @@
-import { IUser } from "../../../types/index.js";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { IUser } from "../../entities/user";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useVerifyUserMutation } from "../../react-query/userQueryAndMutations/UserQueriesMutations";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export type UserContextType = {
   user: IUser | null;
@@ -10,6 +21,7 @@ export type UserContextType = {
   setIsUserAuthenticated: (isAuthenticated: boolean) => void;
   isFollowing: boolean;
   setIsFollowing: (isFollowing: boolean) => void;
+  setAuthenticatedUser: Dispatch<SetStateAction<{}>>;
 };
 
 const UserContext = createContext<UserContextType>({
@@ -21,6 +33,7 @@ const UserContext = createContext<UserContextType>({
   setIsUserAuthenticated: () => {},
   isFollowing: false,
   setIsFollowing: () => {},
+  setAuthenticatedUser: () => {},
 });
 
 export const useUserContext = () => useContext(UserContext);
@@ -35,12 +48,41 @@ export default function UserProvider({ children }: UserProviderProps) {
   const [isUserAuthenticated, setIsUserAuthenticated] =
     useState<boolean>(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const verifyUserMutation = useVerifyUserMutation();
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const verifyUser = useCallback(async () => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      setIsUserAuthenticated(false);
+      setUser(null);
+      setIsUserLoading(false);
+      navigate("/sign-in", { replace: true });
+      return;
+    }
+    setIsUserLoading(true);
+    try {
+      const response = await verifyUserMutation.mutateAsync(id as string);
+      if (response) {
+        setIsUserAuthenticated(true);
+        console.log("verify user endpoint result", response);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsUserAuthenticated(false);
+      setUser(null);
+    } finally {
+      setIsUserLoading(false);
+      setUser(null);
+    }
+  }, [verifyUserMutation]);
 
   useEffect(() => {
-    const user = sessionStorage.getItem("token");
-    if (user) {
-      setUser(JSON.parse(user));
-    }
+    const authenticatedUser = async () => {
+      verifyUser();
+    };
+    authenticatedUser();
   }, []);
 
   return (
@@ -54,6 +96,7 @@ export default function UserProvider({ children }: UserProviderProps) {
         setIsUserAuthenticated,
         isFollowing,
         setIsFollowing,
+        setAuthenticatedUser: () => {},
       }}
     >
       {children}

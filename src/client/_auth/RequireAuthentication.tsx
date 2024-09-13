@@ -1,13 +1,23 @@
 import { useUserContext } from "../services/context/user/UseContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Loader from "../components/shared/Loader";
 
 const RequireAuthentication = () => {
-  const { isUserAuthenticated } = useUserContext();
+  const { isUserAuthenticated, isUserLoading } = useUserContext();
   const location = useLocation();
 
-  if (!isUserAuthenticated) {
-    return <Navigate to="/sign-in" state={{ from: location.pathname }} />;
+  console.log("isUserAuthenticated:", isUserAuthenticated);
+
+  if (isUserLoading) {
+    return <Loader />;
   }
+
+  if (!isUserAuthenticated) {
+    return (
+      <Navigate to="/sign-in" state={{ from: location.pathname }} replace />
+    );
+  }
+
   return <Outlet />;
 };
 
