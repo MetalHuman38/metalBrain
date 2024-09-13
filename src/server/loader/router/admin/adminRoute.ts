@@ -1,7 +1,6 @@
 import express from "express";
 import {
   AdminPromoteUseCase,
-  AdminUseCase,
   RestrictedSuperAdminActionUseCase,
 } from "../../admin/AdminUseCase.js";
 import { SequelizeAdminRepo } from "../../admin/SequelizeAdminRepo.js";
@@ -16,20 +15,12 @@ const router = express.Router();
 
 // Set up dependencies
 const adminRepo = new SequelizeAdminRepo();
-const adminUseCase = new AdminUseCase(adminRepo);
 const roleAuthorizationMiddleware = new RoleAuthorizationMiddleware();
 const adminPromoteUseCase = new AdminPromoteUseCase(adminRepo);
 const restrictedAction = new RestrictedSuperAdminActionUseCase(adminRepo);
 const logger = new WinstonLogger();
 const authorizations = new Authorizations(adminPromoteUseCase, logger);
 const superAdminController = new SuperAdminController(restrictedAction, logger);
-console.log("Admin Use cases:", adminUseCase);
-console.log("Role Authorization Middleware:", roleAuthorizationMiddleware);
-console.log("Admin Repo:", adminRepo);
-console.log("Admin Promote Use cases:", adminPromoteUseCase);
-console.log("Authorizations:", authorizations);
-console.log("Restricted Action:", restrictedAction);
-console.log("Super Admin Controller:", superAdminController);
 
 // Example of an admin-protected route
 // Example of an admin-protected route

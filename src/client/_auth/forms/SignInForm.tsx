@@ -48,19 +48,25 @@ const SignInForm = () => {
         email: values.email,
         password: values.password,
       });
-
-      if (!user) {
-        return toast({
+      if (user) {
+        toast({
+          title: "User logged in",
+          description: `Welcome back ${user.first_name} ${user.last_name}`,
+        });
+        navigate("/", { replace: true });
+      } else {
+        setErrorMsg("Invalid credentials");
+        toast({
           title: "Invalid credentials",
           description: `The email or password you entered is incorrect. Please try again.`,
         });
       }
-      navigate("/");
-      toast({
-        description: `checking user credentials...`,
-      });
     } catch (error) {
       console.error("Error logging in user:", error);
+      toast({
+        title: "Error logging in",
+        description: `An error occurred while logging in. Please try again.`,
+      });
     } finally {
       form.reset();
     }

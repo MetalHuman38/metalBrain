@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:8081/api/users";
+export const baseURL = "http://localhost:8081/api/users";
 
-const AxiosConfig = axios.create({
+export const AxiosConfig = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
@@ -10,7 +10,7 @@ const AxiosConfig = axios.create({
   withCredentials: true,
 });
 
-const AxiosConfigPrivate = axios.create({
+export const AxiosConfigPrivate = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
@@ -18,4 +18,8 @@ const AxiosConfigPrivate = axios.create({
   withCredentials: true,
 });
 
-export { AxiosConfig, AxiosConfigPrivate };
+export default {
+  baseURL,
+  AxiosConfig,
+  AxiosConfigPrivate,
+};

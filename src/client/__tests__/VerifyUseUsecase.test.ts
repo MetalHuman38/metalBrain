@@ -3,24 +3,26 @@ import { AxiosConfig } from "../../client/axios/AxiosConfig";
 
 jest.mock("../axios/AxiosConfig");
 
-describe("UserRepository - Login Use Case", () => {
+describe("UserRepository - Verify User Use Case", () => {
   const userRepository = new UserRepository();
 
-  it("should successfully verify in a user", async () => {
-    const verifyUser = { id: 1, role: "superadmin", token: "some-jwt-token" };
-    const mockPost = AxiosConfig.post as jest.Mock;
+  it("should successfully verify a user", async () => {
+    const verifyUser = { id: 1 };
+    const mockPost = AxiosConfig.get as jest.Mock;
     // Simulate a successful login response
     mockPost.mockResolvedValueOnce({
       data: verifyUser,
     });
 
-    const result = await userRepository.verifyUser("some-jwt-token");
+    const result = await userRepository.verifyUser("1");
 
     // Expect the login to return user data (e.g., a JWT token)
     expect(result).toEqual(verifyUser);
     expect(mockPost).toHaveBeenCalledTimes(1);
     expect(mockPost).toHaveBeenCalledWith("/verify", {
-      token: "some-jwt-token",
+      params: { id: "1" },
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     });
   });
 
@@ -32,15 +34,9 @@ describe("UserRepository - Login Use Case", () => {
       response: { status: 500 },
     });
 
-    expect.assertions(2);
-
-    // Try to login with invalid credentials
-    await userRepository.verifyUser("test@example.com").catch((error) => {
-      // Expect an error message related to invalid credentials
+    expect.assertions(1);
+    await userRepository.verifyUser("").catch((error) => {
       expect(error.message).toBe("Unable to verify user! Something went wrong");
-      expect(mockPost).toHaveBeenCalledWith("/verify", {
-        token: "some-jwt-token",
-      });
     });
   });
 });

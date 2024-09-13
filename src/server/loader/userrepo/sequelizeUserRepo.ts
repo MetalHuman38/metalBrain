@@ -1,6 +1,7 @@
 import user_registrations from "../sequelize/models/usermodels/userregistration.model.js";
 import UserRegistrationsAttributes from "../sequelize/models/usermodels/userregistration.model.js";
-import { INewUser, IUser } from "./index.js";
+import UserAttributes from "../sequelize/models/usermodels/users.model.js";
+import { INewUser, IUser, IVerifyUser } from "./index.js";
 import IUserRepository from "../userrepo/IUserRepository.js";
 import users from "../sequelize/models/usermodels/users.model.js";
 import { UnauthorizedError } from "../utils/app-errors.js";
@@ -44,7 +45,7 @@ export class SequelizeUserRepo implements IUserRepository {
   }
 
   // ** MUST BE REMOVED ** //
-  async verifyUser(id: string): Promise<IUser | null> {
+  async verifyUser(id: string): Promise<IVerifyUser | null> {
     const user = await users.findOne({
       where: { id: id },
       attributes: [
@@ -65,15 +66,18 @@ export class SequelizeUserRepo implements IUserRepository {
     if (!user) {
       throw new UnauthorizedError();
     }
-    return null;
+    return user
+      ? ({
+          ...user.toJSON(),
+          token: "token",
+        } as IVerifyUser)
+      : null;
   }
 
   // ** This method is used to authenticate a logged in user and return the user details ** //
-  async findUserByEmail(
-    email: string
-  ): Promise<UserRegistrationsAttributes | null> {
-    const user = await user_registrations.findOne({ where: { email } });
-    return user ? (user.toJSON() as UserRegistrationsAttributes) : null;
+  async findUserByEmail(email: string): Promise<UserAttributes | null> {
+    const user = await users.findOne({ where: { email } });
+    return user ? (user.toJSON() as UserAttributes) : null;
   }
 
   // ** This method is seperate from the below method to allow for a more secure way of finding a user by id ** //
@@ -106,9 +110,12 @@ export class SequelizeUserRepo implements IUserRepository {
     });
     if (!user) return null;
     return {
+      id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
       username: user.username,
+      email: user.email,
+      password: user.password,
       status: user.status,
       bio: user.bio,
       last_activity: user.last_activity,
@@ -121,28 +128,70 @@ export class SequelizeUserRepo implements IUserRepository {
   }
 
   // ** This method is used to authenticate a logged in user and return the user details ** //
-  async loginUser(
-    email: string,
-    password: string
-  ): Promise<UserRegistrationsAttributes | null> {
-    const user = await user_registrations.findOne({
+  async loginUser(email: string, password: string): Promise<IUser | null> {
+    const user = await users.findOne({
       where: { email, password },
-      attributes: ["new_user", "username", "created_at"],
+      attributes: [
+        "id",
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "password",
+        "status",
+        "bio",
+        "last_activity",
+        "role",
+        "avatarUrl",
+        "profile_picture",
+        "user_registration_id",
+        "created_at",
+      ],
     });
-    return user ? (user.toJSON() as UserRegistrationsAttributes) : null;
+    return user ? (user.toJSON() as UserAttributes) : null;
   }
 
   // ** This method is used to authenticate a logged in user and return the user details
-  async logoutUser(email: string): Promise<UserRegistrationsAttributes> {
+  async logoutUser(email: string): Promise<UserAttributes> {
     try {
-      const user = await user_registrations.findOne({ where: { email } });
+      const user = await users.findOne({ where: { email } });
       if (!user) {
         throw new Error("User not found");
       }
-      return user.toJSON() as UserRegistrationsAttributes;
+      return user.toJSON() as UserAttributes;
     } catch (error) {
       console.log("Error logging out user", error);
       throw new Error("Error logging out user");
+    }
+  }
+
+  // ** This method is used to get current logged in user ** //
+  async getCurrentUser(id: number): Promise<IUser | null> {
+    try {
+      const usersArray = await users.findOne({
+        where: { id: id },
+        attributes: [
+          "id",
+          "first_name",
+          "last_name",
+          "username",
+          "status",
+          "bio",
+          "last_activity",
+          "role",
+          "avatarUrl",
+          "profile_picture",
+          "user_registration_id",
+          "created_at",
+        ],
+      });
+      if (!usersArray) {
+        throw new Error("User not found");
+      }
+      return usersArray.toJSON() as UserAttributes;
+    } catch (error) {
+      console.log("Error getting current user in sequelize repo", error);
+      throw new Error("Error getting current user");
     }
   }
 }

@@ -126,7 +126,7 @@ export class BadRequestError extends AppError {
 export class UnauthorizedError extends AppError {
   constructor() {
     super(
-      "WARNIN!!Unauthorized attempt. You do not have the required permissions",
+      "WARNING!!Unauthorized attempt to backend. You do not have the required permissions",
       STATUS_CODES.UNAUTHORIZED,
       true,
       "Unauthorized attempt",

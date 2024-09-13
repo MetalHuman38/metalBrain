@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  GetCurrentUserUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
@@ -62,14 +63,21 @@ export class LoginUser {
       if (!user) {
         throw new InvalidCredentialsError();
       }
-      res.cookie("token", user.token, {
+
+      const token = user.token;
+      const refreshtoken = user.refreshtoken;
+
+      console.log("Token: ", token);
+      console.log("Refresh Token: ", refreshtoken);
+
+      res.cookie("token", token, {
         httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
         secure: jwtENV.JWT_COOKIE_SECURE,
         maxAge: jwtENV.JWT_USER_MAX_AGE,
       });
 
-      res.cookie("refreshToken", user.refreshToken, {
+      res.cookie("refreshtoken", refreshtoken, {
         httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
         secure: jwtENV.JWT_COOKIE_SECURE,
@@ -79,6 +87,8 @@ export class LoginUser {
       res.status(200).json({
         message: "User logged in successfully",
         user: user.user,
+        token: token,
+        refreshtoken: refreshtoken,
       });
     } catch (error: any) {
       throw new InvalidCredentialsError();
@@ -116,10 +126,16 @@ export class RefreshToken {
 
       res.status(200).json({
         message: "Token refreshed successfully",
+        id: user.id,
         user: user.role,
+        resfreshToken: refreshToken,
       });
     } catch (error: any) {
-      throw new NoRefreshTokenError();
+      if (error instanceof NoRefreshTokenError) {
+        throw new NoRefreshTokenError();
+      } else {
+        throw new InternalServerError();
+      }
     }
   }
 }
@@ -148,24 +164,60 @@ export class LogoutUser {
   }
 }
 
+// ** This is where the error is. Should be attended to ** //
 // ** Verify User Controller ** //
 export class VerifyUser {
   constructor(private verifyUserUseCase: VerifyUserUseCase) {}
-
-  async verifyUser(req: Request, res: Response) {
+  async verifyUser(req: Request, _res: Response) {
     try {
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) {
+      const token = req.cookies.token;
+      if (!token) {
         throw new NoTokenError();
       }
-      await this.verifyUserUseCase.VerifyUser(refreshToken);
-      if (!refreshToken) {
-        throw new NoTokenError();
+      console.log("token: ", token);
+      const decodedToken = await this.verifyUserUseCase.VerifyUser(token);
+      const id = decodedToken.id;
+      const role = decodedToken.role;
+      console.log("ID: ", id);
+      console.log("Role: ", role);
+      if (!id || !role) {
+        throw new UnauthorizedError();
       }
-      res.status(200).json({ message: "User verified successfully" });
     } catch (error: any) {
-      res.status(500).json({ message: "error verifying user" });
       throw new Error("Something went wrong");
+    }
+  }
+}
+
+// ** Get current user Controller ** //
+export class GetCurrentUser {
+  constructor(
+    private getCurrentUserUseCase: GetCurrentUserUseCase,
+    private verifyUserUseCase: VerifyUserUseCase
+  ) {}
+
+  async getCurrentUser(req: Request, res: Response) {
+    try {
+      const refreshtoken = req.cookies.refreshtoken;
+      if (!refreshtoken) {
+        throw new NoTokenError();
+      }
+      const decodedtoken =
+        await this.verifyUserUseCase.VerifyUser(refreshtoken);
+      const id = decodedtoken.id;
+      const role = decodedtoken.role;
+      if (!id || !role) {
+        throw new UnauthorizedError();
+      }
+      const user = await this.getCurrentUserUseCase.GetCurrentUser(
+        decodedtoken.id
+      );
+      if (!user) {
+        res.status(401).json({ message: "Unauthorized from the backend" });
+        throw new InternalServerError();
+      }
+    } catch (error: any) {
+      console.log(error);
     }
   }
 }
@@ -176,4 +228,5 @@ export default {
   RefreshToken,
   LogoutUser,
   VerifyUser,
+  GetCurrentUser,
 };

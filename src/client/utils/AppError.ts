@@ -1,4 +1,3 @@
-// errors/AppError.ts
 const STATUS_CODES = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
@@ -11,138 +10,137 @@ const STATUS_CODES = {
   INVALID_CREDENTIALS: 401,
 };
 
-export class AppError extends Error {
-  name: string;
+class AppError extends Error {
   statusCode: number;
   isOperational: boolean;
-  errorStack: string;
-  userMessage: string;
-  context?: string;
-
+  loginErrorResponse: string;
+  context: string;
   constructor(
-    name: string,
+    message: string,
     statusCode: number,
-    description: string,
     isOperational: boolean,
-    errorStack: string,
-    userMessage: string,
-    context?: string
+    context: string,
+    loginErrorResponse: string
   ) {
-    super(description);
-    Object.setPrototypeOf(this, new.target.prototype); // Restore the prototype chain
-    this.name = name;
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = this.constructor.name;
     this.statusCode = statusCode;
     this.isOperational = isOperational;
-    this.errorStack = errorStack;
-    this.userMessage = userMessage; // Message to show to users
     this.context = context;
-    Error.captureStackTrace(this);
+    this.loginErrorResponse = loginErrorResponse;
+    Error.captureStackTrace(this, this.constructor);
+  }
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      statusCode: this.statusCode,
+      isOperational: this.isOperational,
+      context: this.context,
+      loginErrorResponse: this.loginErrorResponse,
+    };
   }
 }
 
-// ** App Specic Errors ** //
-
-// **  Bad Request Error ** //
-export class BadRequestError extends AppError {
-  constructor(description: string) {
+export class LoginError extends AppError {
+  constructor() {
     super(
-      "BadRequestError",
+      "Invalid credentials! Incorrect email or password",
       STATUS_CODES.BAD_REQUEST,
-      description,
+      true,
+      "Login Error",
+      "Invalid credentials! Incorrect email or password"
+    );
+  }
+}
+
+// ** Invalid Credentials Error ** //
+export class InvalidCredentialsError extends AppError {
+  constructor() {
+    super(
+      "Invalid credentials! Incorrect email or password",
+      STATUS_CODES.INVALID_CREDENTIALS,
+      true,
+      "Invalid Credentials",
+      "Invalid credentials! Incorrect email or password"
+    );
+  }
+}
+
+export class BadRequestError extends AppError {
+  constructor() {
+    super(
+      "Invalid request in the body! Request may contain invalid fields",
+      STATUS_CODES.BAD_REQUEST,
       true,
       "Bad Request",
-      "Invalid request in the body! Check the request body",
-      "Context Error"
+      "Invalid request in the body! Request may contain invalid fields"
     );
   }
 }
 
-// ** Invalid Password Error ** //
-export class InvalidPasswordError extends AppError {
-  constructor(description: string) {
+// ** unAuthorized Error ** //
+export class UnauthorizedError extends AppError {
+  constructor() {
     super(
-      "InvalidPasswordError",
-      STATUS_CODES.BAD_REQUEST,
-      description,
-      true,
-      "Invalid Password",
-      "Invalid credentials! Incorrect email or password",
-      "Context Error"
-    );
-  }
-}
-
-// ** Axios Error ** //
-export class IAxiosError extends AppError {
-  constructor(description: string) {
-    super(
-      "IAxiosError",
-      STATUS_CODES.INTERNAL_SERVER_ERROR,
-      description,
-      true,
-      "Axios Error",
-      "Internal Server Error! Something went wrong",
-      "Context Error"
-    );
-  }
-}
-
-// ** Undefined Error ** //
-export class IUndefinedError extends AppError {
-  constructor(description: string) {
-    super(
-      "IUndefinedError",
-      STATUS_CODES.INTERNAL_SERVER_ERROR,
-      description,
-      true,
-      "Undefined Error",
-      "Internal Server Error! Something went wrong",
-      "Context Error"
-    );
-  }
-}
-
-// ** Email Exists Error ** //
-export class EmailExistsError extends AppError {
-  constructor(description: string) {
-    super(
-      "EmailExistsError",
-      STATUS_CODES.CONFLICT,
-      description,
-      true,
-      "Email Exists",
-      "Email already exists! Try another email",
-      "Context Error"
-    );
-  }
-}
-
-// ** Unauthorized Access Error ** //
-export class UnauthorizedAccessError extends AppError {
-  constructor(description: string) {
-    super(
-      "UnauthorizedAccessError",
+      "WARNING!!Unauthorized attempt. You do not have the required permissions",
       STATUS_CODES.UNAUTHORIZED,
-      description,
       true,
-      "Unauthorized Access",
-      "Unauthorized access! Invalid email or password",
-      "Context Error"
+      "Unauthorized attempt",
+      "WARNING!! Unauthorized attempt. You do not have the required permissions"
     );
   }
 }
 
-// ** Unable to verify user ** //
-export class UnableToVerifyUser extends AppError {
-  constructor(description: string) {
+// ** Forbidden Error ** //
+export class ForbiddenError extends AppError {
+  constructor() {
     super(
-      "UnableToVerifyUser",
-      STATUS_CODES.INTERNAL_SERVER_ERROR,
-      description,
+      "WARNING!! Access denied! Not able to perform this action",
+      STATUS_CODES.FORBIDDEN,
       true,
-      "Unable to verify user",
-      "Unable to verify user! Something went wrong",
-      "Context Error"
+      "Forbidden",
+      "WARNING!! Access denied! Not able to perform this action"
+    );
+  }
+}
+
+// ** Not Found Error ** //
+export class NotFoundError extends AppError {
+  constructor() {
+    super(
+      "Resource not found! Do you have the correct URL?",
+      STATUS_CODES.NOT_FOUND,
+      true,
+      "Not Found",
+      "Resource not found! Do you have the correct URL?"
+    );
+  }
+}
+
+// ** Error Verifying Token ** //
+export class ErrorVerifyingToken extends AppError {
+  constructor() {
+    super(
+      "Error verifying token",
+      STATUS_CODES.UNAUTHORIZED,
+      true,
+      "Error Verifying Token",
+      "Error verifying token"
+    );
+  }
+}
+
+// ** Error refreshing token ** //
+export class ErrorRefreshingToken extends AppError {
+  constructor() {
+    super(
+      "Error refreshing token",
+      STATUS_CODES.INTERNAL_SERVER_ERROR,
+      true,
+      "Error Refreshing Token",
+      "Error refreshing token"
     );
   }
 }

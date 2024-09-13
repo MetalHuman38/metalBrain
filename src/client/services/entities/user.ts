@@ -1,6 +1,5 @@
-// ** New User Interface ** //
 export interface INewUser {
-  id?: number;
+  id?: string;
   new_user: string;
   username: string;
   email: string;
@@ -8,9 +7,18 @@ export interface INewUser {
   created_at: Date;
 }
 
-// ** User Interface ** //
-export interface IUser {
+export interface INitialUser {
   id?: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  password: string;
+  created_at: Date;
+}
+
+export interface IUser {
+  id: string;
   first_name: string;
   last_name: string;
   username: string;
@@ -26,10 +34,9 @@ export interface IUser {
   created_at: Date;
 }
 
-// ** User Class ** //
 export class user implements IUser {
   constructor(
-    public id: number,
+    public id: string, // Change the type of 'id' property from number to string
     public first_name: string,
     public last_name: string,
     public username: string,
@@ -50,6 +57,31 @@ export class user implements IUser {
   isAdmin(): boolean {
     return this.role === "admin";
   }
+  // A method to check if the user is active
+  isActive(): boolean {
+    return this.status === "active";
+  }
+
+  // A method to update the user's bio
+  updateBio(newBio: string): void {
+    this.bio = newBio;
+  }
+
+  // A method to format the user's full name
+  getFullName(): string {
+    return `${this.first_name} ${this.last_name}`;
+  }
+}
+
+export interface IRefreshToken {
+  id: number;
+  role: string;
+}
+
+// ** Get Current User Interface ** //
+export interface ICurrentUser {
+  id: number;
+  role: string;
 }
 
 // ** Verify User Interface ** //
@@ -57,9 +89,4 @@ export interface IVerifyUser {
   id: number;
   role: string;
   token: string;
-}
-
-// ** Get current user interface ** //
-export interface IGetCurrentUser {
-  refreshToken: string;
 }
