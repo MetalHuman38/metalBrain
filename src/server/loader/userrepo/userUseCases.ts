@@ -148,6 +148,10 @@ export class LoginUserUseCase {
         throw new ErrorRefreshingToken();
       }
 
+      // ** Remove sensitive data before sending the user object ** //
+      delete (user as { password?: string }).password;
+      delete (user as { email?: string }).email;
+
       // ** Return User, Token and Refresh Token ** //
       return { user, token, refreshtoken };
     } catch (error) {
@@ -239,17 +243,27 @@ export class RefreshTokenUseCase {
 
 // ** Logout user uses case ** //
 export class LogoutUserUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private jwtHandler: IJwtHandler
+  ) {}
 
-  async LogoutUser(email: string): Promise<IUser> {
+  async LogoutUser(token: string): Promise<void> {
     try {
-      const user = await this.userRepository.findUserByEmail(email);
+      const decoded = this.jwtHandler.jwtVerifier(token);
+      if (!decoded) {
+        throw new ErrorVerifyingToken();
+      }
+      const id = decoded.id;
+      if (!id) {
+        throw new UnauthorizedError();
+      }
+      const user = await this.userRepository.findUsersById(id);
       if (!user) {
         throw new Error("User not found");
       }
-
-      await this.userRepository.logoutUser(email);
-      return user;
+      await this.userRepository.logoutUser(id.toString());
+      return;
     } catch (error) {
       // ** Log and handle different types of errors ** //
       console.error("Error logging out user:", error);

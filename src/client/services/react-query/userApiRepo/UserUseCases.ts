@@ -26,8 +26,8 @@ export class LoginUserUseCase {
 // ** Logout User Use Case ** //
 export class LogoutUserUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(email: string): Promise<IUser> {
-    return this.userRepository.logoutUser(email);
+  async execute(id: string): Promise<void> {
+    return this.userRepository.logoutUser(id);
   }
 }
 

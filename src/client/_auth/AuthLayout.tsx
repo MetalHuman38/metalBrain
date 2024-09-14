@@ -5,11 +5,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 const AuthLayout = () => {
   const { isUserAuthenticated } = useUserContext();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (isUserAuthenticated) {
       navigate("/", { replace: true });
     }
   }, [isUserAuthenticated, navigate]);
+
   return (
     <>
       <section className="flex flex-1 justify-center items-center flex-col py-10">

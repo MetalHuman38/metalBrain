@@ -1,7 +1,10 @@
+import { useUserContext } from "@/client/services/context/user/UseContext";
+
 const Home = () => {
+  const { user } = useUserContext();
   return (
     <div className="">
-      <h1 className="">Home</h1>
+      <p className="text-center">You are logged in as {user?.role}</p>
     </div>
   );
 };

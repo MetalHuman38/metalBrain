@@ -22,8 +22,6 @@ const logger = new WinstonLogger();
 const authorizations = new Authorizations(adminPromoteUseCase, logger);
 const superAdminController = new SuperAdminController(restrictedAction, logger);
 
-// Example of an admin-protected route
-// Example of an admin-protected route
 router.get(
   "/protected",
   (req, res, next) => roleAuthorizationMiddleware.handle(req, res, next),

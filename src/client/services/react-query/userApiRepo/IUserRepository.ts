@@ -10,7 +10,7 @@ import {
 export interface IUserRepository {
   registerUser(user: INewUser): Promise<INewUser>;
   loginUser(email: string, password: string): Promise<IUser>;
-  logoutUser(email: string): Promise<IUser>;
+  logoutUser(id: string): Promise<void>;
   verifyUser(id: string): Promise<IVerifyUser>;
   refreshtoken(id: string, role: string): Promise<IRefreshToken>;
   getCurrentUser(id: string): Promise<IUser | null>;

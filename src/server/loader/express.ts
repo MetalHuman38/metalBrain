@@ -51,5 +51,7 @@ export default async function ({ app }: { app: Express }) {
 
   app.use(router);
 
+  app.disable("x-powered-by");
+
   return app;
 }

@@ -14,7 +14,7 @@ export class SequelizeUserRepo implements IUserRepository {
       username: user.username,
       email: user.email,
       password: user.password,
-      created_at: user.created_at,
+      created_at: new Date(),
     });
     return newUser.toJSON() as UserRegistrationsAttributes;
   }
@@ -28,6 +28,7 @@ export class SequelizeUserRepo implements IUserRepository {
         "first_name",
         "last_name",
         "username",
+        "email",
         "status",
         "bio",
         "last_activity",
@@ -53,6 +54,7 @@ export class SequelizeUserRepo implements IUserRepository {
         "first_name",
         "last_name",
         "username",
+        "email",
         "status",
         "bio",
         "last_activity",
@@ -136,8 +138,6 @@ export class SequelizeUserRepo implements IUserRepository {
         "first_name",
         "last_name",
         "username",
-        "email",
-        "password",
         "status",
         "bio",
         "last_activity",
@@ -152,13 +152,13 @@ export class SequelizeUserRepo implements IUserRepository {
   }
 
   // ** This method is used to authenticate a logged in user and return the user details
-  async logoutUser(email: string): Promise<UserAttributes> {
+  async logoutUser(id: string): Promise<void> {
     try {
-      const user = await users.findOne({ where: { email } });
+      const user = await users.findOne({ where: { id: id } });
       if (!user) {
         throw new Error("User not found");
       }
-      return user.toJSON() as UserAttributes;
+      return;
     } catch (error) {
       console.log("Error logging out user", error);
       throw new Error("Error logging out user");
@@ -175,6 +175,7 @@ export class SequelizeUserRepo implements IUserRepository {
           "first_name",
           "last_name",
           "username",
+          "email",
           "status",
           "bio",
           "last_activity",

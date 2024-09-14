@@ -18,12 +18,14 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { useUserContext } from "@/client/services/context/user/UseContext";
 
 const SignInForm = () => {
   const [isLoading] = useState(false);
   const userRef = useRef(null);
   const errRef = useRef(null);
-  const [user, setUser] = useState("");
+  const { user, setUser } = useUserContext();
+  const { setIsUserAuthenticated } = useUserContext();
   const [password, setPassword] = useState("");
   const [errMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
@@ -48,19 +50,19 @@ const SignInForm = () => {
         email: values.email,
         password: values.password,
       });
-      if (user) {
+      if (!user) {
         toast({
-          title: "User logged in",
-          description: `Welcome back ${user.first_name} ${user.last_name}`,
-        });
-        navigate("/", { replace: true });
-      } else {
-        setErrorMsg("Invalid credentials");
-        toast({
-          title: "Invalid credentials",
-          description: `The email or password you entered is incorrect. Please try again.`,
+          title: "Sign In failed. Please try again.",
+          description: `An error occurred while logging in. Please try again.`,
         });
       }
+      setIsUserAuthenticated(true);
+      toast({
+        title: "Sign In successful.",
+        description: `Welcome back ${user?.username}`,
+      });
+      navigate("/", { replace: true });
+      form.reset();
     } catch (error) {
       console.error("Error logging in user:", error);
       toast({
@@ -120,9 +122,9 @@ const SignInForm = () => {
                     ref={userRef}
                     onChange={(e) => {
                       field.onChange(e);
-                      setUser(e.target.value);
+                      setUser(e.target.value as any);
                     }}
-                    value={user}
+                    value={user?.toString() || ""}
                     required
                   />
                 </FormControl>

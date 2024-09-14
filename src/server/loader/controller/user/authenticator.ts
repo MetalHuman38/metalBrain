@@ -24,16 +24,15 @@ export class RegisterUser {
 
   async registerUser(req: Request, res: Response) {
     try {
-      const { name, username, email, password } = req.body;
-      if (!name || !username || !email || !password) {
+      const { new_user, username, email, password } = req.body;
+      if (!new_user || !username || !email || !password) {
         throw new BadRequestError();
       }
       const user = await this.registerUserUseCase.RegisterUser({
-        new_user: name,
+        new_user: new_user,
         username: username,
         email: email,
         password: password,
-        created_at: new Date(),
       });
 
       if (!user) {
@@ -143,23 +142,18 @@ export class RefreshToken {
 // ** Logout User Controller ** //
 export class LogoutUser {
   constructor(private logoutUserUseCase: LogoutUserUseCase) {}
-
   async logoutUser(req: Request, res: Response) {
     try {
-      const email = req.body.email;
-      if (!email) {
-        throw new BadRequestError();
+      const token = req.cookies.token;
+      if (!token) {
+        throw new NoTokenError();
       }
-      const user = await this.logoutUserUseCase.LogoutUser(email);
-      if (!user) {
-        throw new InternalServerError();
-      }
-
+      await this.logoutUserUseCase.LogoutUser(token);
       res.clearCookie("token");
-      res.clearCookie("refreshToken");
-      res.status(200).json({ message: "User logged out successfully" });
+      res.clearCookie("refreshtoken");
+      res.clearCookie("user");
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      throw new Error("Error logging out user");
     }
   }
 }

@@ -41,7 +41,7 @@ const loginUserUseCase = new LoginUserUseCase(
   passwordHasher
 );
 // ** logout user use case ** //
-const logoutUserUseCase = new LogoutUserUseCase(userRepository);
+const logoutUserUseCase = new LogoutUserUseCase(userRepository, jwtHandler);
 // ** refresh token use case ** //
 const refreshTokenUseCase = new RefreshTokenUseCase(userRepository, jwtHandler);
 // ** verify user use case ** //
@@ -79,6 +79,13 @@ router.get("/refreshToken", async (req, res) => {
 // ** logout user route ** //
 router.post("/logout", async (req, res) => {
   await logoutController.logoutUser(req, res);
+  try {
+    res.status(200).json({
+      message: "User logged out successfully",
+    });
+  } catch (error: any) {
+    console.log(error);
+  }
 });
 
 // ** verify user route ** //
@@ -100,7 +107,6 @@ router.get("/verify", async (req, res) => {
     }
     res.status(200).json({
       message: "User verified successfully from verified Route",
-      user: user,
     });
   } catch (error: any) {
     console.log(error);
