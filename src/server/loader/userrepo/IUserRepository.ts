@@ -26,7 +26,7 @@ export interface IUserRepository {
   loginUser(email: string, password: string): Promise<IUser | null>;
 
   // ** This method is used to log out a user** //
-  logoutUser(email: string): Promise<IUser>;
+  logoutUser(id: string): Promise<void>;
 
   // ** This method is used to get current logged in user ** //
   getCurrentUser(id: number): Promise<IUser | null>;

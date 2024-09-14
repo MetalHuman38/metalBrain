@@ -6,11 +6,11 @@ jest.mock("../../client/axios/AxiosConfig");
 jest.mock("axios", () => {
   const axiosInstance = {
     post: jest.fn(),
-    baseURL: "http://localhost:8081/api/users",
-    Headers: {
-      "Content-Type": "application/json",
+    defaults: {
+      headers: {
+        common: {},
+      },
     },
-    withCredentials: true,
   };
   return {
     create: jest.fn(() => axiosInstance),
@@ -20,7 +20,6 @@ jest.mock("axios", () => {
 
 describe("UserRepository - Login Use Case", () => {
   const userRepository = new UserRepository();
-
   beforeEach(() => {
     Object.defineProperty(window, "sessionStorage", {
       value: {
@@ -42,18 +41,18 @@ describe("UserRepository - Login Use Case", () => {
       token: "token",
       refreshtoken: "refreshtoken",
     };
-
-    // Mock a successful login response
-    (AxiosConfig.post as jest.Mock).mockResolvedValueOnce({
+    const mockPost = AxiosConfig.post as jest.Mock;
+    mockPost.mockResolvedValueOnce({
       data: loggedInUser,
     });
+    // Mock a successful login response
 
     const result = await userRepository.loginUser(
       "rest@example.com",
       "password"
     );
 
-    expect(AxiosConfig.post).toHaveBeenCalledWith(`${baseURL}/users`);
+    expect(AxiosConfig.post).toHaveBeenCalledWith(`${baseURL}`);
 
     // Expect session storage to be updated with the new token
     expect(window.sessionStorage.setItem).toHaveBeenCalledWith(
@@ -96,7 +95,7 @@ describe("UserRepository - Login Use Case", () => {
     await userRepository
       .loginUser("test@example.com", "wrong-password")
       .catch((error) => {
-        expect(AxiosConfig.post).toHaveBeenCalledWith(`${baseURL}/users`);
+        expect(AxiosConfig.post).toHaveBeenCalledWith(`${baseURL}`);
         // Expect an error message related to invalid credentials
         expect(error.message).toBe("Unable to login user");
       });

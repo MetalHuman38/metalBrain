@@ -40,8 +40,8 @@ export const useLogoutUserMutation = () => {
   const userRepository = new UserRepository();
   const logoutUserUseCase = new LogoutUserUseCase(userRepository);
   return useMutation({
-    mutationFn: (email: string) => {
-      return logoutUserUseCase.execute(email);
+    mutationFn: (id: string) => {
+      return logoutUserUseCase.execute(id);
     },
   });
 };
@@ -82,6 +82,7 @@ export const useGetCurrentUserQuery = (id: string) => {
 export default {
   useRegisterUserMutation,
   useLoginUserMutation,
+  useLogoutUserMutation,
   useVerifyUserMutation,
   useRefreshTokenMutation,
   useGetCurrentUserQuery,

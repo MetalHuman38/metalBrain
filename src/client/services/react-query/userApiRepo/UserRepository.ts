@@ -50,6 +50,7 @@ export class UserRepository implements IUserRepository {
       );
       sessionStorage.setItem("token", response.data.token);
       sessionStorage.setItem("refreshtoken", response.data.refreshtoken);
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
       AxiosConfig.defaults.headers.common["Authorization"] =
         `Bearer ${response.data.token}`;
       return response.data;
@@ -67,19 +68,23 @@ export class UserRepository implements IUserRepository {
   }
 
   // ** This method logs out a user ** //
-  async logoutUser(email: string): Promise<IUser> {
+  async logoutUser(id: string): Promise<void> {
     try {
       const response = await AxiosConfig.post("/logout", {
-        email,
+        id: id,
       });
+
       if (response.status === 200) {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("refreshtoken");
+        sessionStorage.removeItem("user");
         delete AxiosConfig.defaults.headers.common["Authorization"];
         document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie =
           "refreshtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       } else {
         throw new Error("Unable to logout user");
       }

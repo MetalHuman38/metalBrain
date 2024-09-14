@@ -5,7 +5,6 @@ export interface INewUser {
   username: string;
   email: string;
   password: string;
-  created_at: Date;
 }
 
 // ** User Interface ** //
