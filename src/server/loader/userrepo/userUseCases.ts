@@ -328,11 +328,11 @@ export class VerifyUserUseCase {
 export class GetCurrentUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
-  async GetCurrentUser(id: number): Promise<IUser> {
+  async GetCurrentUser(id: number): Promise<any> {
     try {
       // ** Find User by ID and Role ** //
       const user = await this.userRepository.getCurrentUser(id);
-      if (!user?.id || user.role !== user.role) {
+      if (id === null) {
         throw new UserWithIdNotFoundError();
       }
       // ** Return User ** //
@@ -350,10 +350,77 @@ export class GetCurrentUserUseCase {
   }
 }
 
+// ** Get All Users Use Case ** //
+export class GetAllUsersUseCase {
+  constructor(private userRepository: IUserRepository) {}
+
+  async GetAllUsers(limit: number, offset: number): Promise<any> {
+    try {
+      // ** Retrieve all users ** //
+      const users = await this.userRepository.getAllUsers(limit, offset);
+      if (!users) {
+        throw new Error("No users found");
+      }
+      // ** Return Users ** //
+      return users;
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      console.error("Error retrieving users:", error);
+      throw new Error("An unexpected error occurred during user lookup.");
+    }
+  }
+}
+
+// ** Search Users Use Case ** //
+export class SearchUsersUseCase {
+  constructor(private userRepository: IUserRepository) {}
+
+  async SearchUsers(searchValue: string): Promise<any> {
+    try {
+      // ** Search for users ** //
+      const users = await this.userRepository.searchUsers(searchValue);
+      if (!users) {
+        throw new Error("No users found");
+      }
+      // ** Return Users ** //
+      return users;
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      console.error("Error searching for users:", error);
+      throw new Error("An unexpected error occurred during user search.");
+    }
+  }
+}
+
+// ** getAllUsersCount Use Case ** //
+export class GetAllUsersCountUseCase {
+  constructor(private userRepository: IUserRepository) {}
+
+  async GetAllUsersCount(limit: number, offset: number): Promise<any> {
+    try {
+      // ** Retrieve all users with count and pagination ** //
+      const users = await this.userRepository.getAllUsersCount(limit, offset);
+      if (!users) {
+        throw new Error("No users found");
+      }
+      // ** Return Users ** //
+      return users;
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      console.error("Error retrieving users:", error);
+      throw new Error("An unexpected error occurred during user lookup.");
+    }
+  }
+}
+
 export default {
   RegisterUserUseCase,
   LoginUserUseCase,
   RefreshTokenUseCase,
   LogoutUserUseCase,
   VerifyUserUseCase,
+  GetCurrentUserUseCase,
+  GetAllUsersUseCase,
+  SearchUsersUseCase,
+  GetAllUsersCountUseCase,
 };

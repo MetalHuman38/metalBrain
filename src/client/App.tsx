@@ -5,6 +5,7 @@ import { SignInForm, SignUpForm } from "./_auth/forms";
 import RootLayout from "./_root/RootLayout";
 import { Home } from "./_root/pages";
 import RequireAuthentication from "./_auth/RequireAuthentication";
+import { AllUsers, ExploreUsers, Profile } from "./_root/pages/users";
 
 const App = () => {
   return (
@@ -20,6 +21,9 @@ const App = () => {
         <Route element={<RequireAuthentication />}>
           <Route path="/" element={<RootLayout />}>
             <Route index element={<Home />} />
+            <Route path="/profile/:id/*" element={<Profile />} />
+            <Route path="/all-users" element={<AllUsers />} />
+            <Route path="/explore" element={<ExploreUsers />} />
           </Route>
         </Route>
       </Routes>

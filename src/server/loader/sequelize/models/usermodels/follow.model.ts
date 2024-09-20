@@ -6,13 +6,18 @@ interface FollowAttributes {
   follower_id: number;
   following_id: number;
   created_at: Date; // Date the follow was created
-  status: "follow" | "unfollow" | "block";
+  status: "follow" | "unfollow" | "following" | "block";
 }
 
 interface FollowCreationAttributes
-  extends Optional<FollowAttributes, "created_at" | "status"> {
+  extends Optional<
+    FollowAttributes,
+    "follower_id" | "following_id" | "created_at" | "status"
+  > {
   follower_id: number;
   following_id: number;
+  created_at: Date; // Date the follow was created
+  status: "follow" | "unfollow" | "following" | "block";
 }
 
 // ** Define Instance of Sequelize ** //
@@ -23,7 +28,7 @@ class follows extends Model<FollowAttributes, FollowCreationAttributes> {
   declare follower_id: number;
   declare following_id: number;
   declare created_at: Date;
-  declare status: "follow" | "unfollow" | "block";
+  declare status: "follow" | "unfollow" | "following" | "block";
 }
 
 // ** Define the Follow Model ** //
@@ -54,9 +59,9 @@ follows.init(
       defaultValue: DataTypes.NOW,
     },
     status: {
-      type: DataTypes.ENUM("follow", "unfollow", "block"),
+      type: DataTypes.ENUM("follow", "unfollow", "following", "block"),
       allowNull: false,
-      defaultValue: "unfollow",
+      defaultValue: "follow",
     },
   },
   {
@@ -64,8 +69,38 @@ follows.init(
     modelName: "follows",
     timestamps: false,
     freezeTableName: true,
-  },
+  }
 );
+
+// ** Define afterCreate hook to update the status to following when a user is followed ** //
+follows.afterCreate(async (follow: FollowAttributes) => {
+  if (follow.status === "follow") {
+    await follows.update(
+      { status: "following" },
+      {
+        where: {
+          follower_id: follow.follower_id,
+          following_id: follow.following_id,
+        },
+      }
+    );
+  }
+});
+
+// ** Define afterUpdate hook to update the status to unfollow when a user is unfollowed ** //
+follows.afterUpdate(async (follow: FollowAttributes) => {
+  if (follow.status === "unfollow") {
+    await follows.update(
+      { status: "unfollow" },
+      {
+        where: {
+          follower_id: follow.follower_id,
+          following_id: follow.following_id,
+        },
+      }
+    );
+  }
+});
 
 // ** Sync the model with the database ** //
 await sequelize

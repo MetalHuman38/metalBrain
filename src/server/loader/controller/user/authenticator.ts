@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import {
+  GetAllUsersCountUseCase,
+  GetAllUsersUseCase,
   GetCurrentUserUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
   RegisterUserUseCase,
+  SearchUsersUseCase,
   VerifyUserUseCase,
 } from "../../userrepo/userUseCases.js";
 import {
@@ -152,6 +155,9 @@ export class LogoutUser {
       res.clearCookie("token");
       res.clearCookie("refreshtoken");
       res.clearCookie("user");
+      res.clearCookie("users");
+      res.clearCookie("profileUser");
+      res.clearCookie("followStatus");
     } catch (error: any) {
       throw new Error("Error logging out user");
     }
@@ -185,33 +191,112 @@ export class VerifyUser {
 
 // ** Get current user Controller ** //
 export class GetCurrentUser {
-  constructor(
-    private getCurrentUserUseCase: GetCurrentUserUseCase,
-    private verifyUserUseCase: VerifyUserUseCase
-  ) {}
+  constructor(private getCurrentUserUseCase: GetCurrentUserUseCase) {}
 
   async getCurrentUser(req: Request, res: Response) {
     try {
-      const refreshtoken = req.cookies.refreshtoken;
-      if (!refreshtoken) {
-        throw new NoTokenError();
-      }
-      const decodedtoken =
-        await this.verifyUserUseCase.VerifyUser(refreshtoken);
-      const id = decodedtoken.id;
-      const role = decodedtoken.role;
-      if (!id || !role) {
-        throw new UnauthorizedError();
-      }
-      const user = await this.getCurrentUserUseCase.GetCurrentUser(
-        decodedtoken.id
-      );
+      const id = parseInt(req.query.id as string, 10);
+      const user = await this.getCurrentUserUseCase.GetCurrentUser(id);
       if (!user) {
         res.status(401).json({ message: "Unauthorized from the backend" });
         throw new InternalServerError();
       }
     } catch (error: any) {
       console.log(error);
+    }
+  }
+}
+
+// ** Get All Users Controller ** //
+export class GetAllUsers {
+  constructor(private getAllUsersUseCase: GetAllUsersUseCase) {}
+  async getAllUsers(req: Request, res: Response) {
+    try {
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const offset = parseInt(req.query.offset as string, 10) || 0;
+      // Check if limit is a valid number and offset is not negative
+      if (isNaN(limit) || limit <= 0 || isNaN(offset) || offset < 0) {
+        throw new BadRequestError();
+      }
+      console.log("Limit: ", limit);
+      console.log("Offset: ", offset);
+      const users = await this.getAllUsersUseCase.GetAllUsers(
+        Number(limit),
+        Number(offset)
+      );
+      if (!users) {
+        throw new InternalServerError();
+      }
+      res.status(200).json({
+        users,
+        limit,
+        offset,
+        message: "Users fetched successfully",
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json({
+        message: "Internal Server Error from get all users controller",
+      });
+    }
+  }
+}
+
+// ** Search Users Controller ** //
+export class SearchUsers {
+  constructor(private searchUsersUseCase: SearchUsersUseCase) {}
+  async searchUsers(req: Request, res: Response) {
+    try {
+      const searchValue = req.body.searchValue;
+      if (!searchValue) {
+        throw new BadRequestError();
+      }
+      console.log("Search Value: ", searchValue);
+      const users = await this.searchUsersUseCase.SearchUsers(searchValue);
+      if (!users) {
+        throw new InternalServerError();
+      }
+      res.status(200).json({
+        users,
+        searchValue,
+        message: "Users fetched successfully",
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json({
+        message: "Internal Server Error from search users controller",
+      });
+    }
+  }
+}
+
+// ** GetAllUserCount Controller ** //
+export class GetAllUserCount {
+  constructor(private getAllUsersCountUseCase: GetAllUsersCountUseCase) {}
+  async getAllUserCount(req: Request, res: Response) {
+    try {
+      const { page = 0 } = req.query;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const offset = page ? parseInt(page as string, 10) * limit : 0;
+      const count = await this.getAllUsersCountUseCase.GetAllUsersCount(
+        limit,
+        offset
+      );
+      if (!count) {
+        throw new InternalServerError();
+      }
+      res.status(200).json({
+        count,
+        page,
+        limit,
+        offset,
+        message: "User count fetched successfully",
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json({
+        message: "Internal Server Error from get all user count controller",
+      });
     }
   }
 }
@@ -223,4 +308,7 @@ export default {
   LogoutUser,
   VerifyUser,
   GetCurrentUser,
+  GetAllUsers,
+  SearchUsers,
+  GetAllUserCount,
 };

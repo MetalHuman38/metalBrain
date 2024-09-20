@@ -1,14 +1,14 @@
 import useRefreshToken from "@/client/components/hooks/use-refreshToken";
 import { useUserContext } from "@/client/services/context/user/UseContext";
 import { useVerifyUserMutation } from "../../react-query/userQueryAndMutations/UserQueriesMutations";
-import { IUser, user } from "../../entities/user";
+import { IUser, users } from "../../entities/user";
 import { useEffect, useState } from "react";
 import { AxiosConfig } from "@/client/axios/AxiosConfig";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const CurrentUser = () => {
   const { setIsUserAuthenticated } = useUserContext();
-  const [user, setUser] = useState<user | IUser>();
+  const [user, setUser] = useState<users | IUser>();
   const verifyUser = useVerifyUserMutation();
   const navigate = useNavigate();
   const { id } = useParams();

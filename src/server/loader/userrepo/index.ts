@@ -26,7 +26,7 @@ export interface IUser {
 }
 
 // ** User Class ** //
-export class user implements IUser {
+export class users implements IUser {
   constructor(
     public id: number,
     public first_name: string,

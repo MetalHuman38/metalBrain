@@ -1,10 +1,5 @@
 // ** User Use Cases ** //
-import {
-  INewUser,
-  IRefreshToken,
-  IUser,
-  IVerifyUser,
-} from "../../entities/user";
+import { INewUser, IRefreshToken, IVerifyUser } from "../../entities/user";
 import { IUserRepository } from "./IUserRepository";
 
 // ** Register User Use Case ** //
@@ -18,7 +13,7 @@ export class RegisterUserUseCase {
 // ** Login User Use Case ** //
 export class LoginUserUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(email: string, password: string): Promise<IUser> {
+  async execute(email: string, password: string): Promise<INewUser | null> {
     return this.userRepository.loginUser(email, password);
   }
 }
@@ -50,8 +45,32 @@ export class RefreshTokenUseCase {
 // ** Get current user Use Case ** //
 export class GetCurrentUserUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(id: string): Promise<IUser | null> {
+  async execute(id: string): Promise<any> {
     return this.userRepository.getCurrentUser(id);
+  }
+}
+
+// ** Get all users Use Case ** //
+export class GetAllUsersUseCase {
+  constructor(private userRepository: IUserRepository) {}
+  async execute(limit: number, offset: number): Promise<any> {
+    return this.userRepository.getAllUsers(limit, offset);
+  }
+}
+
+// ** Search Users Use Case ** //
+export class SearchUsersUseCase {
+  constructor(private userRepository: IUserRepository) {}
+  async execute(searchValue: string): Promise<any> {
+    return this.userRepository.searchUsers(searchValue);
+  }
+}
+
+// ** Get All Users Count Use Case ** //
+export class GetAllUsersCountUseCase {
+  constructor(private userRepository: IUserRepository) {}
+  async execute(limit: number, offset: number): Promise<any> {
+    return this.userRepository.getAllUsersCount(limit, offset);
   }
 }
 
@@ -60,4 +79,8 @@ export default {
   LoginUserUseCase,
   VerifyUserUseCase,
   RefreshTokenUseCase,
+  GetCurrentUserUseCase,
+  GetAllUsersUseCase,
+  SearchUsersUseCase,
+  GetAllUsersCountUseCase,
 };
