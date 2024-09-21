@@ -45,7 +45,7 @@ module.exports = [
     },
   },
   {
-    files: ["**/*.js", "**/*.jsx"],
+    files: ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.tsx", "**/*.ts"],
     plugins: {
       reactrefresh: reactRefresh,
     },

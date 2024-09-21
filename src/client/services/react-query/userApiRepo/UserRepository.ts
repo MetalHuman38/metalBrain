@@ -36,7 +36,7 @@ export class UserRepository implements IUserRepository {
   }
 
   // ** This method is used to login a user ** //
-  async loginUser(email: string, password: string): Promise<IUser> {
+  async loginUser(email: string, password: string): Promise<INewUser | null> {
     try {
       const response = await AxiosConfig.post(
         "/login",
@@ -78,6 +78,9 @@ export class UserRepository implements IUserRepository {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("refreshtoken");
         sessionStorage.removeItem("user");
+        sessionStorage.removeItem("users");
+        sessionStorage.removeItem("profileUser");
+        sessionStorage.removeItem("followStatus");
         delete AxiosConfig.defaults.headers.common["Authorization"];
         document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -85,6 +88,12 @@ export class UserRepository implements IUserRepository {
           "refreshtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie =
           "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "users=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "profileUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "followStatus=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       } else {
         throw new Error("Unable to logout user");
       }
@@ -150,15 +159,22 @@ export class UserRepository implements IUserRepository {
   // ** This method gets current user by id and role ** //
   async getCurrentUser(id: string): Promise<IUser> {
     try {
-      const refreshtoken = sessionStorage.getItem("refreshtoken");
+      const token = sessionStorage.getItem("token");
       const response = await AxiosConfig.get("/currentUser", {
         params: { id: id },
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${refreshtoken}`,
+          Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
+      if (response.status === 200) {
+        sessionStorage.setItem(
+          "profileUser",
+          JSON.stringify(response.data.user)
+        );
+        return response.data.user;
+      }
       return response.data;
     } catch (error) {
       if (
@@ -169,6 +185,55 @@ export class UserRepository implements IUserRepository {
         throw new UnauthorizedError();
       }
       throw new Error("Invalid token");
+    }
+  }
+
+  // ** This method gets all users ** //
+  async getAllUsers(limit: number, offset: number): Promise<any> {
+    try {
+      const response = await AxiosConfig.get("/allUsers", {
+        params: { limit, offset },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      console.log("Response from get all users", response.data.users);
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to get users");
+    }
+  }
+
+  // ** This method searches for users using search VALUE** //
+  async searchUsers(searchValue: string): Promise<any> {
+    try {
+      const response = await AxiosConfig.get("/searchUsers", {
+        params: { searchValue },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to search for users");
+    }
+  }
+
+  // ** This method gets all users count ** //
+  async getAllUsersCount(limit: number, offset: number): Promise<any> {
+    try {
+      const response = await AxiosConfig.get("/allUsersCount", {
+        params: { limit, offset },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to get users count");
     }
   }
 }

@@ -34,7 +34,7 @@ export interface IUser {
   created_at: Date;
 }
 
-export class user implements IUser {
+export class users implements IUser {
   constructor(
     public id: string, // Change the type of 'id' property from number to string
     public first_name: string,

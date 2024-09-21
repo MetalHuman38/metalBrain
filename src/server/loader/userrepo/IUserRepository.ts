@@ -23,13 +23,22 @@ export interface IUserRepository {
   ): Promise<IUser | null>;
 
   // ** This method is used to authenticate a logged in user and return the user details ** //
-  loginUser(email: string, password: string): Promise<IUser | null>;
+  loginUser(email: string, password: string): Promise<INewUser | null>;
 
   // ** This method is used to log out a user** //
   logoutUser(id: string): Promise<void>;
 
   // ** This method is used to get current logged in user ** //
-  getCurrentUser(id: number): Promise<IUser | null>;
+  getCurrentUser(id: number): Promise<any>;
+
+  // ** This method is used to get all users ** //
+  getAllUsers(limit: number, offset: number): Promise<any>;
+
+  // ** This method is used to search for users using search value ** //
+  searchUsers(searchValue: string): Promise<any>;
+
+  // ** This method is used to get All users with counts and pagination ** //
+  getAllUsersCount(limit: number, offset: number): Promise<any>;
 }
 
 export default IUserRepository;

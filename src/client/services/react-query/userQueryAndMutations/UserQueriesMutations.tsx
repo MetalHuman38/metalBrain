@@ -3,11 +3,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserRepository } from "../userApiRepo/UserRepository";
 import {
+  GetAllUsersCountUseCase,
+  GetAllUsersUseCase,
   GetCurrentUserUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
   RegisterUserUseCase,
+  SearchUsersUseCase,
   VerifyUserUseCase,
 } from "../userApiRepo/UserUseCases";
 import { INewUser } from "../../entities/user";
@@ -73,9 +76,47 @@ export const useGetCurrentUserQuery = (id: string) => {
   const userRepository = new UserRepository();
   const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
   return useQuery({
-    queryKey: [UserQueryKeys.GET_CURRENT_USER],
+    queryKey: [UserQueryKeys.GET_CURRENT_USER, id],
     queryFn: () =>
       getCurrentUserUseCase.execute(id).then((response) => response),
+    enabled: !!id,
+  });
+};
+
+// ** Get All Users Mutation using queryKey ** //
+export const useGetAllUsersQuery = (limit: number, offset: number) => {
+  const userRepository = new UserRepository();
+  const getAllUsersUseCase = new GetAllUsersUseCase(userRepository);
+  return useQuery({
+    queryKey: [UserQueryKeys.GET_ALL_USERS, limit, offset],
+    queryFn: () =>
+      getAllUsersUseCase.execute(limit, offset).then((response) => response),
+  });
+};
+
+// ** Search Users Mutation using queryKey ** //
+export const useSearchUsersQuery = (searchValue: string) => {
+  const userRepository = new UserRepository();
+  const searchUsersUseCase = new SearchUsersUseCase(userRepository);
+  return useQuery({
+    queryKey: [UserQueryKeys.GET_SEARCH_VALUES, searchValue],
+    queryFn: () =>
+      searchUsersUseCase.execute(searchValue).then((response) => response),
+    enabled: !!searchValue,
+  });
+};
+
+// ** Get All Users Count Mutation using queryKey ** //
+export const useGetAllUsersCountQuery = (limit: number, offset: number) => {
+  const userRepository = new UserRepository();
+  const getAllUsersCountUseCase = new GetAllUsersCountUseCase(userRepository);
+  return useQuery({
+    queryKey: [UserQueryKeys.GET_ALL_USER_COUNT, limit, offset],
+    queryFn: () =>
+      getAllUsersCountUseCase
+        .execute(limit, offset)
+        .then((response) => response),
+    enabled: !!limit && !!offset,
   });
 };
 
@@ -86,4 +127,7 @@ export default {
   useVerifyUserMutation,
   useRefreshTokenMutation,
   useGetCurrentUserQuery,
+  useGetAllUsersQuery,
+  useSearchUsersQuery,
+  useGetAllUsersCountQuery,
 };

@@ -6,6 +6,9 @@ import {
   LogoutUser,
   VerifyUser,
   GetCurrentUser,
+  GetAllUsers,
+  SearchUsers,
+  GetAllUserCount,
 } from "../../controller/user/authenticator.js";
 import {
   LoginUserUseCase,
@@ -14,11 +17,17 @@ import {
   LogoutUserUseCase,
   VerifyUserUseCase,
   GetCurrentUserUseCase,
+  GetAllUsersUseCase,
+  SearchUsersUseCase,
+  GetAllUsersCountUseCase,
 } from "../../userrepo/userUseCases.js";
 import { SequelizeUserRepo } from "../../userrepo/sequelizeUserRepo.js";
 import { BcryptPasswordHandler } from "../../../services/bcryptPasswordHandler.js";
 import { JwtTokenService } from "../../../services/jwtTokenService.js";
-import { UnauthorizedError } from "../../utils/app-errors.js";
+import {
+  InternalServerError,
+  UnauthorizedError,
+} from "../../utils/app-errors.js";
 
 const router = express.Router();
 
@@ -27,6 +36,7 @@ const userRepository = new SequelizeUserRepo();
 const passwordHasher = new BcryptPasswordHandler();
 const jwtHandler = new JwtTokenService();
 
+// ****************************************************************************************** //
 // ** register user use case ** //
 const registerUserUseCase = new RegisterUserUseCase(
   userRepository,
@@ -50,17 +60,28 @@ const verifyUserUseCase = new VerifyUserUseCase(userRepository, jwtHandler);
 // ** get current user use case ** //
 const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
 
+// ** get all users use case ** //
+const getAllUsersUseCase = new GetAllUsersUseCase(userRepository);
+
+// ** search users use case ** //
+const searchUsersUseCase = new SearchUsersUseCase(userRepository);
+
+// ** get all users count use case ** //
+const getAllUsersCountUseCase = new GetAllUsersCountUseCase(userRepository);
+
+// ****************************************************************************************** //
 // ** controller instances ** //
 const registerController = new RegisterUser(registerUserUseCase);
 const loginController = new LoginUser(loginUserUseCase);
 const refreshTokenController = new RefreshToken(refreshTokenUseCase);
 const logoutController = new LogoutUser(logoutUserUseCase);
-const getCurrentUserController = new GetCurrentUser(
-  getCurrentUserUseCase,
-  verifyUserUseCase
-);
+const getCurrentUserController = new GetCurrentUser(getCurrentUserUseCase);
 const verifyUserController = new VerifyUser(verifyUserUseCase);
+const getAllUsersController = new GetAllUsers(getAllUsersUseCase);
+const searchUsersController = new SearchUsers(searchUsersUseCase);
+const getAllUsersCountController = new GetAllUserCount(getAllUsersCountUseCase);
 
+// ****************************************************************************************** //
 // ** user registration route ** //
 router.post("/register", async (req, res) => {
   await registerController.registerUser(req, res);
@@ -117,29 +138,35 @@ router.get("/verify", async (req, res) => {
 router.get("/currentUser", async (req, res) => {
   await getCurrentUserController.getCurrentUser(req, res);
   try {
-    const refreshtoken = req.cookies.refreshtoken;
-    if (!refreshtoken) {
-      res.status(401).json({ message: "No token found" });
-    }
-    const decodedToken = await verifyUserUseCase.VerifyUser(refreshtoken);
-    const id = decodedToken.id;
-    const role = decodedToken.role;
-    const user = await getCurrentUserUseCase.GetCurrentUser(decodedToken.id);
-    console.log("User from get current user route", user);
-    if (!id || !role) {
+    const id = parseInt(req.query.id as string, 10);
+    const user = await getCurrentUserUseCase.GetCurrentUser(id);
+    if (!user) {
       res.status(401).json({ message: "Unauthorized from the backend" });
-      return;
+      throw new InternalServerError();
     }
-
     res.status(200).json({
-      message: "User verified successfully from Route controller",
-      id: id,
-      role: role,
-      user: user,
+      message: "User fetched successfully",
+      id: user.id,
+      user,
     });
   } catch (error: any) {
     console.log(error);
   }
+});
+
+// ** get all users route ** //
+router.get("/allUsers", async (req, res) => {
+  await getAllUsersController.getAllUsers(req, res);
+});
+
+// ** search users route ** //
+router.post("/searchUsers", async (req, res) => {
+  await searchUsersController.searchUsers(req, res);
+});
+
+// ** get all users count route ** //
+router.get("/allUsersCount", async (req, res) => {
+  await getAllUsersCountController.getAllUserCount(req, res);
 });
 
 export default router;
