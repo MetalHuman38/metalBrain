@@ -90,6 +90,19 @@ export const useGetStatusQuery = (
   });
 };
 
+// ** Get Follower Counts Query ** //
+export const useGetFollowerCountsQuery = (user_id: number) => {
+  const followRepository = new FollowRepository();
+  const followUseCase = new FollowUseCase(followRepository);
+  return useQuery({
+    queryKey: [FollowQueryKeys.GET_FOLLOW_COUNTS, user_id],
+    queryFn: () => {
+      return followUseCase.getFollowerCounts(user_id);
+    },
+    enabled: !!user_id,
+  });
+};
+
 export default {
   useFollowUserMutation,
   useUnfollowUserMutation,
@@ -98,4 +111,5 @@ export default {
   useGetFollowersQuery,
   useGetFollowingQuery,
   useGetStatusQuery,
+  useGetFollowerCountsQuery,
 };

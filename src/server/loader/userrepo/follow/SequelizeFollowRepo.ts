@@ -1,8 +1,14 @@
 import { IFollowRepository } from "./IFollowRepository.js";
 import { Follow } from "../follow/FollowEntity.js";
-import { IGetFollowers, IGetFollowing, IGetStatus } from "./interface.js";
+import {
+  IGetFollowerCounts,
+  IGetFollowers,
+  IGetFollowing,
+  IGetStatus,
+} from "./interface.js";
 import { Follow as FollowEntity } from "../follow/FollowEntity.js";
 import follows from "../../sequelize/models/usermodels/follow.model.js";
+import follow_counts from "../../sequelize/models/usermodels/followcount.model.js";
 
 // ** Class to handle the logic and behavior of following a user ** //
 export class SequelizeFollowRepo implements IFollowRepository {
@@ -11,9 +17,50 @@ export class SequelizeFollowRepo implements IFollowRepository {
     const newFollow = await follows.create({
       follower_id: follow.follower_id,
       following_id: follow.following_id,
-      status: follow.status,
+      status: "following",
       created_at: follow.created_at,
     });
+
+    await follows.update(
+      {
+        status: "following",
+      },
+      {
+        where: {
+          follower_id: follow.follower_id,
+          following_id: follow.following_id,
+        },
+      }
+    );
+    // ** Ensure follow_counts entries exist before incrementing ** //
+    await follow_counts.upsert({
+      user_id: follow.follower_id,
+      follower_count: 0,
+      following_count: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    await follow_counts.upsert({
+      user_id: follow.following_id,
+      follower_count: 0,
+      following_count: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    // ** Increment the follower count ** //
+    await follow_counts.increment("follower_count", {
+      by: 1,
+      where: { user_id: follow.following_id },
+    });
+
+    // ** Increment the following count ** //
+    await follow_counts.increment("following_count", {
+      by: 1,
+      where: { user_id: follow.follower_id },
+    });
+
     return new FollowEntity(
       newFollow.follower_id,
       newFollow.following_id,
@@ -46,6 +93,18 @@ export class SequelizeFollowRepo implements IFollowRepository {
         follower_id: follow.follower_id,
         following_id: follow.following_id,
       },
+    });
+
+    // ** Decrement the follower count ** //
+    await follow_counts.decrement("follower_count", {
+      by: 1,
+      where: { user_id: follow.following_id },
+    });
+
+    // ** Decrement the following count ** //
+    await follow_counts.decrement("following_count", {
+      by: 1,
+      where: { user_id: follow.follower_id },
     });
 
     return new FollowEntity(
@@ -123,7 +182,7 @@ export class SequelizeFollowRepo implements IFollowRepository {
       return {
         follower_id,
         following_id,
-        status: "follow",
+        status: "follow" as "follow" | "unfollow" | "following" | "block",
         created_at: new Date(),
       };
     }
@@ -166,6 +225,36 @@ export class SequelizeFollowRepo implements IFollowRepository {
     if (!updatedFollow[0]) {
       throw new Error("Unable to update follow status");
     }
+  }
+
+  // ** Method to get follower counts ** //
+  async getFollowerCounts(user_id: number): Promise<IGetFollowerCounts> {
+    const followerCounts = await follow_counts.findOne({
+      where: { user_id: user_id },
+      attributes: [
+        "user_id",
+        "follower_count",
+        "following_count",
+        "created_at",
+        "updated_at",
+      ],
+    });
+    if (!followerCounts) {
+      return {
+        user_id: user_id,
+        follower_count: 0,
+        following_count: 0,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    }
+    return {
+      user_id: followerCounts.user_id,
+      follower_count: followerCounts.follower_count,
+      following_count: followerCounts.following_count,
+      created_at: followerCounts.created_at,
+      updated_at: followerCounts.updated_at,
+    };
   }
 }
 

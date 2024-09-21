@@ -28,3 +28,12 @@ export interface IGetStatus {
   status: "follow" | "unfollow" | "following" | "block";
   created_at: Date;
 }
+
+// ** Get Follower/Following Counts Interface ** //
+export interface IGetFollowerCounts {
+  user_id: number;
+  follower_count: number;
+  following_count: number;
+  created_at: Date;
+  updated_at: Date;
+}

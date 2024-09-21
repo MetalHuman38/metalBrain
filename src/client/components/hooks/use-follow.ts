@@ -1,33 +1,28 @@
-import { useUserContext } from "@/client/services/context/user/UseContext";
+// ** Type: Custom hook ** //
 import { useState } from "react";
+import { useGetFollowerCountsQuery } from "@/client/services/react-query/followQueryAndMutations/FollowQueryAndMutation";
 
-export const useFollow = (initialIsFollowing: boolean) => {
-  // ** Access context values here ** //
-  const {
-    status,
-    setStatus,
-    followerCount,
-    setFollowerCount,
-    followingCount,
-    setFollowingCount,
-  } = useUserContext();
+export const useFollow = (initialIsFollowing: boolean, user_id: number) => {
+  const [status, setStatus] = useState<"follow" | "following" | "block">(
+    initialIsFollowing ? "following" : "follow"
+  );
 
-  const [isFollowing, setIsFollowing] = useState<boolean>(initialIsFollowing);
+  const [isFollowing, setIsFollowing] = useState<"follow" | "following">(
+    initialIsFollowing ? "follow" : "following"
+  );
+
+  const { data } = useGetFollowerCountsQuery(user_id);
+  const followerCount = data?.follower_count ?? 0;
+  const followingCount = data?.following_count ?? 0;
+
+  // ** Handle follow action ** //
   const handleFollow = () => {
-    if (status === "follow") {
-      setFollowerCount((prev) => prev + 1); // ** Increase follower count ** //
-      setIsFollowing(true); // Set to following
-      setStatus("following"); // Update status
-    }
+    setStatus("following"); // Update status
   };
 
   // ** Handle unfollow action ** //
   const handleUnfollow = () => {
-    if (status === "following") {
-      setFollowerCount((prev) => Math.max(0, prev - 1)); // Decrease follower count
-      setIsFollowing(false); // Set to not following
-      setStatus("follow"); // Update status
-    }
+    setStatus("follow"); // Update status
   };
 
   // Reset or handle self-status
@@ -37,15 +32,13 @@ export const useFollow = (initialIsFollowing: boolean) => {
 
   return {
     isFollowing,
-    followerCount,
-    status,
-    followingCount,
-    setFollowingCount,
     handleFollow,
     handleUnfollow,
     handleSelfStatus,
     setIsFollowing,
-    setFollowerCount,
+    followerCount,
+    followingCount,
+    status,
     setStatus,
   };
 };

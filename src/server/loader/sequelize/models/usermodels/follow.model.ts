@@ -32,7 +32,6 @@ class follows extends Model<FollowAttributes, FollowCreationAttributes> {
 }
 
 // ** Define the Follow Model ** //
-
 follows.init(
   {
     follower_id: {
@@ -68,39 +67,24 @@ follows.init(
     sequelize,
     modelName: "follows",
     timestamps: false,
+    hooks: {
+      afterCreate: async (follow: FollowAttributes) => {
+        if (follow.status === "follow") {
+          await follows.update(
+            { status: "following" },
+            {
+              where: {
+                follower_id: follow.follower_id,
+                following_id: follow.following_id,
+              },
+            }
+          );
+        }
+      },
+    },
     freezeTableName: true,
   }
 );
-
-// ** Define afterCreate hook to update the status to following when a user is followed ** //
-follows.afterCreate(async (follow: FollowAttributes) => {
-  if (follow.status === "follow") {
-    await follows.update(
-      { status: "following" },
-      {
-        where: {
-          follower_id: follow.follower_id,
-          following_id: follow.following_id,
-        },
-      }
-    );
-  }
-});
-
-// ** Define afterUpdate hook to update the status to unfollow when a user is unfollowed ** //
-follows.afterUpdate(async (follow: FollowAttributes) => {
-  if (follow.status === "unfollow") {
-    await follows.update(
-      { status: "unfollow" },
-      {
-        where: {
-          follower_id: follow.follower_id,
-          following_id: follow.following_id,
-        },
-      }
-    );
-  }
-});
 
 // ** Sync the model with the database ** //
 await sequelize

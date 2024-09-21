@@ -1,5 +1,10 @@
 import { Follow } from "../follow/FollowEntity";
-import { IGetFollowers, IGetFollowing, IGetStatus } from "./interface";
+import {
+  IGetFollowerCounts,
+  IGetFollowers,
+  IGetFollowing,
+  IGetStatus,
+} from "./interface";
 
 // ** Interface for the Follow Repository ** //
 export interface IFollowRepository {
@@ -15,6 +20,7 @@ export interface IFollowRepository {
     following_id: number,
     status: string
   ): Promise<void>;
+  getFollowerCounts(user_id: number): Promise<IGetFollowerCounts>;
 }
 
 export default IFollowRepository;

@@ -42,4 +42,10 @@ router.put(
   followController.updateFollowStatus.bind(followController)
 );
 
+// ** Get follower counts routes ** //
+router.get(
+  "/followercounts",
+  followController.getFollowerCounts.bind(followController)
+);
+
 export default router;

@@ -15,6 +15,9 @@ export class FollowRepository implements IFollowRepository {
         },
         withCredentials: true,
       });
+      if (response.data === 200 || response.data === 201) {
+        sessionStorage.setItem("following", "true");
+      }
       return response.data;
     } catch (error) {
       throw new Error("Unable to follow user");
@@ -115,9 +118,26 @@ export class FollowRepository implements IFollowRepository {
         },
         withCredentials: true,
       });
+      console.log(response.data.status);
       return response.data.status;
     } catch (error) {
       throw new Error("Unable to get status");
+    }
+  }
+
+  // ** This method gets the follower counts ** //
+  async getFollowerCounts(user_id: number) {
+    try {
+      const response = await AxiosConfig.get("/followercounts", {
+        params: { user_id },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to get follower counts");
     }
   }
 }

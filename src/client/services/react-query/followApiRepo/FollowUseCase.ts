@@ -49,6 +49,11 @@ export class FollowUseCase {
   async getStatus(follower_id: number, following_id: number) {
     return await this.followRepo.getStatus(follower_id, following_id);
   }
+
+  // ** Method to get follower counts ** //
+  async getFollowerCounts(user_id: number) {
+    return await this.followRepo.getFollowerCounts(user_id);
+  }
 }
 
 export default FollowUseCase;

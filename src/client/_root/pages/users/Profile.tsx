@@ -3,7 +3,6 @@ import StatBlock from "../StatBlock";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useGetCurrentUserQuery } from "@/client/services/react-query/userQueryAndMutations/UserQueriesMutations";
-import { useEffect } from "react";
 import { useProfileFollowStatus } from "@/client/components/hooks/use-followUser";
 
 const Profile = () => {
@@ -13,19 +12,13 @@ const Profile = () => {
   const {
     followUserMutation,
     unfollowUserMutation,
-    refreshStatus,
     status,
+    followStatus,
     followerCount,
     followingCount,
     isFollowing,
     handleFollowUser,
   } = useProfileFollowStatus(currentuser, user);
-
-  useEffect(() => {
-    if (currentuser?.user && user) {
-      refreshStatus();
-    }
-  }, [currentuser, user]);
 
   return (
     <div className="profile-container">
@@ -87,10 +80,8 @@ const Profile = () => {
                   followUserMutation.isPending || unfollowUserMutation.isPending
                 }
               >
-                {isFollowing
-                  ? status === "following"
-                    ? "Following"
-                    : "Follow"
+                {isFollowing && followStatus?.status === "following"
+                  ? "Following"
                   : "Follow"}
               </Button>
               {followUserMutation.error && (

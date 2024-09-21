@@ -136,4 +136,19 @@ export class FollowController {
       res.status(400).json({ error: (error as any).message });
     }
   }
+
+  // ** Method to get follower counts ** //
+  async getFollowerCounts(req: Request, res: Response): Promise<void> {
+    try {
+      const user_id = parseInt(req.query.user_id as string, 10);
+      if (isNaN(user_id) || user_id === undefined) {
+        throw new Error("Invalid user_id");
+      }
+      const followerCounts =
+        await this.followUseCase.getFollowerCounts(user_id);
+      res.status(200).json(followerCounts);
+    } catch (error) {
+      res.status(400).json({ error: (error as any).message });
+    }
+  }
 }
