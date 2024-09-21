@@ -13,11 +13,11 @@ const Profile = () => {
     followUserMutation,
     unfollowUserMutation,
     status,
-    followStatus,
     followerCount,
     followingCount,
     isFollowing,
     handleFollowUser,
+    followStatus,
   } = useProfileFollowStatus(currentuser, user);
 
   return (
@@ -85,7 +85,7 @@ const Profile = () => {
                   : "Follow"}
               </Button>
               {followUserMutation.error && (
-                <p>Error: {(followUserMutation.error as Error).message}</p>
+                <p>Error: {(unfollowUserMutation.error as Error).message}</p>
               )}
               <div className="py-2 flex justify-center">
                 <p className="text-lg font-semibold text-light-3">

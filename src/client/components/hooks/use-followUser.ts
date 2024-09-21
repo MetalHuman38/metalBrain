@@ -29,21 +29,23 @@ export const useProfileFollowStatus = (currentuser: any, user: any) => {
     status
   );
 
+  console.log("followStatus", followStatus);
+
   const handleFollowUser = async () => {
     if (!currentuser || !user) return;
     const follow = new Follow(
       Number(user.id),
       Number(currentuser.id),
-      status,
+      followStatus ? "unfollow" : "follow",
       new Date()
     );
     try {
-      if (status === "following") {
-        await unfollowUserMutation.mutateAsync(follow);
-        handleUnfollow();
-      } else {
+      if (!followStatus?.status || followStatus?.status === "follow") {
         await followUserMutation.mutateAsync(follow);
         handleFollow();
+      } else if (followStatus?.status === "following") {
+        await unfollowUserMutation.mutateAsync(follow);
+        handleUnfollow();
       }
     } catch (error) {
       console.log("Error following user", error);

@@ -105,7 +105,9 @@ export class FollowController {
         following_id
       );
       console.log("Status from the controller", status);
-      res.status(200).json(status);
+      res.status(200).json({
+        status: status,
+      });
     } catch (error) {
       res.status(400).json({ error: (error as any).message });
     }

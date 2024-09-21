@@ -5,7 +5,7 @@ export class Follow implements IFollowRequest {
   constructor(
     public follower_id: number,
     public following_id: number,
-    public status: "follow" | "unfollow" | "following" | "block",
+    public status: "follow" | "unfollow" | "following" | "block" | undefined,
     public created_at: Date
   ) {}
 

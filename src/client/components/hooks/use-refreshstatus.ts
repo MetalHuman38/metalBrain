@@ -5,7 +5,7 @@ import { useDebounce } from "./use-debounce";
 const useRefreshStatus = (
   follower_id: number,
   following_id: number,
-  status: string
+  status: "follow" | "unfollow" | "following" | "block" | undefined
 ) => {
   const debouncedFollower_id = useDebounce(String(follower_id), 500);
   const debouncedFollowing_id = useDebounce(String(following_id) || "", 500);
@@ -25,11 +25,11 @@ const useRefreshStatus = (
     if (initialStatus && followStatus) {
       setStatus(followStatus.status);
     }
-  }, [followStatus]);
+  }, [followStatus?.status]);
 
   const refreshStatus = async () => {
     if (isPending || error) {
-      return status;
+      return followStatus?.status;
     }
     return status === "follow" ? "following" : "follow";
   };

@@ -2,7 +2,7 @@
 export interface IFollowRequest {
   follower_id: number;
   following_id: number;
-  status: "follow" | "unfollow" | "following" | "block";
+  status: "follow" | "unfollow" | "following" | "block" | undefined;
   created_at: Date;
 }
 
