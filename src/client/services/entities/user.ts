@@ -90,3 +90,24 @@ export interface IVerifyUser {
   role: string;
   token: string;
 }
+
+// ** User Activities Interface ** //
+export interface IUserActivities {
+  id: number;
+  user_id: number;
+  activity: string;
+  activity_type: string;
+  created_at: Date;
+  metadata: {
+    [key: string]: string;
+  };
+}
+
+// ** Interface for chart data ** //
+export interface IChartData {
+  series: Array<{
+    name: string;
+    data: number[];
+  }>;
+  categories: string[];
+}

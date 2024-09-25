@@ -1,5 +1,10 @@
 // ** User Use Cases ** //
-import { INewUser, IRefreshToken, IUser } from "../../entities/user";
+import {
+  INewUser,
+  IRefreshToken,
+  IUser,
+  IUserActivities,
+} from "../../entities/user";
 import { IUserRepository } from "./IUserRepository";
 
 // ** Register User Use Case ** //
@@ -74,6 +79,14 @@ export class GetAllUsersCountUseCase {
   }
 }
 
+// ** Get all user activities Use Case ** //
+export class GetUserActivitiesUseCase {
+  constructor(private userRepository: IUserRepository) {}
+  async execute(): Promise<IUserActivities> {
+    return this.userRepository.fetchUserActivities();
+  }
+}
+
 export default {
   RegisterUserUseCase,
   LoginUserUseCase,
@@ -83,4 +96,5 @@ export default {
   GetAllUsersUseCase,
   SearchUsersUseCase,
   GetAllUsersCountUseCase,
+  GetUserActivitiesUseCase,
 };

@@ -89,6 +89,9 @@ const LeftSideBar = () => {
         )}
 
         <ul className="flex flex-col gap-6">
+          {isOpen && (
+            <motion.span className="divider" variants={animations.fadeIn} />
+          )}
           {sidebarLinks.map((link: INavLink) => {
             const isActive = RouteAccess.isActive(pathname, link.route);
             const isExternalLink = RouteAccess.isExternalLink(
@@ -98,9 +101,13 @@ const LeftSideBar = () => {
             if (!RouteAccess.hasAccess(link.allowedRoles, user.role))
               return null;
             return (
-              <li
+              <motion.li
                 key={link.label}
                 className={`leftsidebar-link group ${isActive && "bg-primary-700"}`}
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
               >
                 {isExternalLink ? (
                   <a
@@ -131,7 +138,7 @@ const LeftSideBar = () => {
                     {link.label}
                   </NavLink>
                 )}
-              </li>
+              </motion.li>
             );
           })}
           <Button

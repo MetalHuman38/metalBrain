@@ -10,6 +10,7 @@ import {
   SearchUsers,
   GetAllUserCount,
   VerifyUserEmail,
+  GetUsersActivities,
 } from "../../controller/user/authenticator.js";
 import {
   LoginUserUseCase,
@@ -22,6 +23,7 @@ import {
   SearchUsersUseCase,
   GetAllUsersCountUseCase,
   VerifyUserEmailUseCase,
+  GetUsersActivitiesUseCase,
 } from "../../userrepo/userUseCases.js";
 import { SequelizeUserRepo } from "../../userrepo/sequelizeUserRepo.js";
 import { BcryptPasswordHandler } from "../../../services/bcryptPasswordHandler.js";
@@ -77,6 +79,11 @@ const searchUsersUseCase = new SearchUsersUseCase(userRepository);
 // ** get all users count use case ** //
 const getAllUsersCountUseCase = new GetAllUsersCountUseCase(userRepository);
 
+// ** get all users activities use case ** //
+const getAllUsersActivitiesUseCase = new GetUsersActivitiesUseCase(
+  userRepository
+);
+
 // ****************************************************************************************** //
 // ** controller instances ** //
 const registerController = new RegisterUser(registerUserUseCase);
@@ -89,6 +96,9 @@ const verifyUserEmailController = new VerifyUserEmail(verifyUserEmailUseCase);
 const getAllUsersController = new GetAllUsers(getAllUsersUseCase);
 const searchUsersController = new SearchUsers(searchUsersUseCase);
 const getAllUsersCountController = new GetAllUserCount(getAllUsersCountUseCase);
+const getUsersActivitiesController = new GetUsersActivities(
+  getAllUsersActivitiesUseCase
+);
 
 // ****************************************************************************************** //
 // ** user registration route ** //
@@ -161,6 +171,11 @@ router.post("/searchUsers", async (req, res) => {
 // ** get all users count route ** //
 router.get("/allUsersCount", async (req, res) => {
   await getAllUsersCountController.getAllUserCount(req, res);
+});
+
+// ** get all users activities route ** //
+router.get("/usersActivities", async (req, res) => {
+  await getUsersActivitiesController.getUserActivities(req, res);
 });
 
 export default router;

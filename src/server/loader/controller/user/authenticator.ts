@@ -3,6 +3,7 @@ import {
   GetAllUsersCountUseCase,
   GetAllUsersUseCase,
   GetCurrentUserUseCase,
+  GetUsersActivitiesUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
@@ -339,6 +340,29 @@ export class GetAllUserCount {
       console.log(error);
       res.status(500).json({
         message: "Internal Server Error from get all user count controller",
+      });
+    }
+  }
+}
+
+// ** Get all users activities Controller ** //
+export class GetUsersActivities {
+  constructor(private getUserActivitiesUseCase: GetUsersActivitiesUseCase) {}
+  async getUserActivities(_req: Request, res: Response) {
+    try {
+      const activities =
+        await this.getUserActivitiesUseCase.GetAllUsersActivities();
+      if (!activities) {
+        throw new InternalServerError();
+      }
+      res.status(200).json({
+        activities,
+        message: "User activities fetched successfully",
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json({
+        message: "Internal Server Error from get user activities controller",
       });
     }
   }

@@ -1,5 +1,5 @@
 // ** User Authentication and Authorization ** //
-import { INewUser, IUser } from "../userrepo/index.js";
+import { INewUser, IUser, IUserActivities } from "../userrepo/index.js";
 
 export interface IUserRepository {
   createUser(user: INewUser): Promise<INewUser>;
@@ -52,6 +52,9 @@ export interface IUserRepository {
 
   // ** This method sends verification email to user ** //
   sendVerificationEmail(email: string, token: string): Promise<void>;
+
+  // ** This method fetches all user activities ** //
+  fetchUserActivities(): Promise<IUserActivities>;
 }
 
 export default IUserRepository;

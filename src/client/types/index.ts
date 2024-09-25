@@ -6,3 +6,7 @@ export type INavLink = {
   rel: string;
   allowedRoles: string[];
 };
+
+export interface HeaderProps {
+  title: string;
+}

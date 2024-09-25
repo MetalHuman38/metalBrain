@@ -232,4 +232,19 @@ export class UserRepository implements IUserRepository {
       throw new Error("Unable to get users count");
     }
   }
+
+  // ** This method fetches all user activities ** //
+  async fetchUserActivities(): Promise<any> {
+    try {
+      const response = await AxiosConfig.get("/userActivities", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to fetch user activities");
+    }
+  }
 }

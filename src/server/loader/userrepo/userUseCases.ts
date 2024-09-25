@@ -607,6 +607,29 @@ export class SendVerificationEmailUseCase {
   }
 }
 
+// ** Get all users activities use case ** //
+export class GetUsersActivitiesUseCase {
+  constructor(private userRepository: IUserRepository) {}
+
+  async GetAllUsersActivities(): Promise<any> {
+    try {
+      // ** Fetch all user activities ** //
+      const activities = await this.userRepository.fetchUserActivities();
+      if (!activities) {
+        throw new Error("No activities found");
+      }
+      // ** Return Activities ** //
+      return activities;
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      console.error("Error fetching user activities:", error);
+      throw new Error(
+        "An unexpected error occurred during user activities fetch."
+      );
+    }
+  }
+}
+
 export default {
   RegisterUserUseCase,
   LoginUserUseCase,
@@ -621,4 +644,5 @@ export default {
   UpdateUserStatusUseCase,
   SendVerificationEmailUseCase,
   VerifyUserEmailUseCase,
+  GetUsersActivitiesUseCase,
 };

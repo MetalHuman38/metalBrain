@@ -75,3 +75,13 @@ export interface IVerifyUser {
 export interface IGetCurrentUser {
   refreshToken: string;
 }
+
+// ** User Activities Interface ** //
+export interface IUserActivities {
+  id: number;
+  user_id: number;
+  activity: string;
+  activity_type: string;
+  created_at: Date;
+  metadata: string;
+}

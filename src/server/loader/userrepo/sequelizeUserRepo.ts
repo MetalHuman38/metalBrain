@@ -1,4 +1,5 @@
 import user_registrations from "../sequelize/models/usermodels/userregistration.model.js";
+import UserActivitiesAttributes from "../sequelize/models/usermodels/useractivities.model.js";
 import UserRegistrationsAttributes from "../sequelize/models/usermodels/userregistration.model.js";
 import UserAttributes from "../sequelize/models/usermodels/users.model.js";
 import { INewUser, IUser } from "./index.js";
@@ -6,6 +7,7 @@ import IUserRepository from "../userrepo/IUserRepository.js";
 import users from "../sequelize/models/usermodels/users.model.js";
 import { UnauthorizedError } from "../utils/app-errors.js";
 import { Op } from "sequelize";
+import user_activities from "../sequelize/models/usermodels/useractivities.model.js";
 
 export class SequelizeUserRepo implements IUserRepository {
   // ** This method is used to create a new user ** //
@@ -267,6 +269,31 @@ export class SequelizeUserRepo implements IUserRepository {
     console.log("Sending verification email to: ", email);
     console.log("Verification token: ", token);
     return;
+  }
+
+  // ** This method fetches all user activities ** //
+  async fetchUserActivities(): Promise<any> {
+    try {
+      const userActivitiesArray = await user_activities.findAll({
+        attributes: [
+          "id",
+          "user_id",
+          "activity",
+          "activity_type",
+          "created_at",
+          "metadata",
+        ],
+      });
+      if (!userActivitiesArray) {
+        throw new Error("User activities not found");
+      }
+      return userActivitiesArray.map((user) =>
+        user.toJSON()
+      ) as UserActivitiesAttributes[];
+    } catch (error) {
+      console.log("Error fetching user activities in sequelize repo", error);
+      throw new Error("Error fetching user activities");
+    }
   }
 }
 

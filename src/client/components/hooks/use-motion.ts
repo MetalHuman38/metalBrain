@@ -9,7 +9,14 @@ export const useMotion = () => {
   const toggleLeftSidebar = () => {
     setIsOpen(!isOpen);
   };
-  // Slide-in from the left animation
+
+  // ** Slide-in from the right animation ** //
+  const slideInFromRight = {
+    hidden: { x: -50, opacity: 0 },
+    visible: { x: 0, opacity: 1, transition: { duration: 0.5, delay: 0.3 } },
+  };
+
+  // ** Slide-in from the left animation ** //
   const slideInFromLeft = {
     hidden: { x: "-100%", opacity: 0 },
     visible: { x: 0, opacity: 1, transition: { duration: 0.5 } },
@@ -27,13 +34,13 @@ export const useMotion = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
-  // Fade-in animation
+  // ** Fade-in animation ** //
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.6 } },
   };
 
-  // Staggered children animation (for lists, etc.)
+  // ** Staggered children animation (for lists, etc.) ** //
   const staggerContainer = {
     hidden: { opacity: 0 },
     visible: {
@@ -44,6 +51,7 @@ export const useMotion = () => {
     },
   };
 
+  // ** Staggered children animation (for lists, etc.) ** //
   const staggerChild = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -62,6 +70,7 @@ export const useMotion = () => {
   return {
     motion,
     animations: {
+      slideInFromRight,
       slideInFromLeft,
       slideInFromBottom,
       slideInFromTop,

@@ -6,6 +6,7 @@ import {
   GetAllUsersCountUseCase,
   GetAllUsersUseCase,
   GetCurrentUserUseCase,
+  GetUserActivitiesUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
@@ -121,6 +122,19 @@ export const useGetAllUsersCountQuery = (limit: number, offset: number) => {
   });
 };
 
+// ** Get All User Activities Mutation using queryKey ** //
+export const useGetAllUserActivitiesQuery = () => {
+  const userRepository = new UserRepository();
+  const getAllUserActivitiesUseCase = new GetUserActivitiesUseCase(
+    userRepository
+  );
+  return useQuery({
+    queryKey: [UserQueryKeys.GET_ALL_USER_ACTIVITIES],
+    queryFn: () =>
+      getAllUserActivitiesUseCase.execute().then((response) => response),
+  });
+};
+
 export default {
   useRegisterUserMutation,
   useLoginUserMutation,
@@ -131,4 +145,5 @@ export default {
   useGetAllUsersQuery,
   useSearchUsersQuery,
   useGetAllUsersCountQuery,
+  useGetAllUserActivitiesQuery,
 };
