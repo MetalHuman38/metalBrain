@@ -52,15 +52,14 @@ const SignInForm = () => {
       });
       if (!user) {
         toast({
-          title: "Sign In failed. Please try again.",
           description: `An error occurred while logging in. Please try again.`,
         });
       }
-      setIsUserAuthenticated(true);
       toast({
         title: "Sign In successful.",
         description: `Welcome back ${user?.username}`,
       });
+      setIsUserAuthenticated(true);
       navigate("/", { replace: true });
       form.reset();
     } catch (error) {

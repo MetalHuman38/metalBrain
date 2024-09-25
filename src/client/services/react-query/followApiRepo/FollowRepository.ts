@@ -9,7 +9,7 @@ export class FollowRepository implements IFollowRepository {
   // ** This method follows a user ** //
   async followUser(follow: Follow): Promise<Follow> {
     try {
-      const response = await AxiosConfig.post("/follow", follow, {
+      const response = await AxiosConfig.put("/follow", follow, {
         headers: {
           "Content-Type": "application/json",
         },

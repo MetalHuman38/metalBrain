@@ -1,11 +1,18 @@
 import { bottombarLinks } from "@/client/services/constants";
 import { Link, useLocation } from "react-router-dom";
+import { useMotion } from "@/client/components/hooks/use-motion";
 
 const Bottombar = () => {
   const { pathname } = useLocation();
+  const { motion, animations } = useMotion();
 
   return (
-    <section className="bottom-bar">
+    <motion.section
+      className="bottom-bar"
+      initial="hidden"
+      animate="visible"
+      variants={animations.slideInFromBottom}
+    >
       {bottombarLinks.map((link) => {
         const isActive = pathname === link.route;
         return (
@@ -27,7 +34,7 @@ const Bottombar = () => {
           </Link>
         );
       })}
-    </section>
+    </motion.section>
   );
 };
 

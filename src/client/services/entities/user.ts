@@ -18,7 +18,7 @@ export interface INitialUser {
 }
 
 export interface IUser {
-  id: string;
+  id?: string;
   first_name: string;
   last_name: string;
   username: string;

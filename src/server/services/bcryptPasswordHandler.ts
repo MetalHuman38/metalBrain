@@ -42,7 +42,6 @@ export class BcryptPasswordHandler implements IPasswordHasher {
     if (!passwordRegex.test(password)) {
       throw new PasswordValidationError();
     }
-
     // Prevent too many identical characters
     if (/([a-zA-Z0-9])\1\1/.test(password)) {
       throw new InternalServerError();

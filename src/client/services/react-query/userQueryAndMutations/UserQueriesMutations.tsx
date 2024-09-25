@@ -50,13 +50,14 @@ export const useLogoutUserMutation = () => {
 };
 
 // ** Verify User Mutation ** //
-export const useVerifyUserMutation = () => {
+export const useVerifyUserMutation = (id: string, role: string) => {
   const userRepository = new UserRepository();
   const verifyUserUseCase = new VerifyUserUseCase(userRepository);
-  return useMutation({
-    mutationFn: (id: string) => {
-      return verifyUserUseCase.execute(id);
-    },
+  return useQuery({
+    queryKey: [UserQueryKeys.VERIFY_USER],
+    queryFn: () =>
+      verifyUserUseCase.execute(id, role).then((response) => response),
+    enabled: !!id && !!role,
   });
 };
 

@@ -8,11 +8,13 @@ import {
   RefreshTokenUseCase,
   RegisterUserUseCase,
   SearchUsersUseCase,
+  VerifyUserEmailUseCase,
   VerifyUserUseCase,
 } from "../../userrepo/userUseCases.js";
 import {
   BadRequestError,
   ErrorCreatingUser,
+  ErrorVerifyingToken,
   InternalServerError,
   InvalidCredentialsError,
   NoRefreshTokenError,
@@ -67,7 +69,13 @@ export class LoginUser {
       }
 
       const token = user.token;
+      if (!token) {
+        throw new InvalidCredentialsError();
+      }
       const refreshtoken = user.refreshtoken;
+      if (!refreshtoken) {
+        throw new InvalidCredentialsError();
+      }
 
       console.log("Token: ", token);
       console.log("Refresh Token: ", refreshtoken);
@@ -104,12 +112,12 @@ export class RefreshToken {
 
   async refreshToken(req: Request, res: Response) {
     try {
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) {
+      const refreshtoken = req.cookies.refreshtoken;
+      if (!refreshtoken) {
         throw new NoRefreshTokenError();
       }
-      const id = refreshToken.id;
-      const role = refreshToken.role;
+      const id = refreshtoken.id;
+      const role = refreshtoken.role;
       if (!id || role) {
         throw new UnauthorizedError();
       }
@@ -119,7 +127,7 @@ export class RefreshToken {
         throw new Error("Error refreshing token");
       }
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie("refreshtoken", refreshtoken, {
         httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",
         secure: jwtENV.JWT_COOKIE_SECURE,
@@ -130,7 +138,7 @@ export class RefreshToken {
         message: "Token refreshed successfully",
         id: user.id,
         user: user.role,
-        resfreshToken: refreshToken,
+        resfreshtoken: refreshtoken,
       });
     } catch (error: any) {
       if (error instanceof NoRefreshTokenError) {
@@ -168,21 +176,56 @@ export class LogoutUser {
 // ** Verify User Controller ** //
 export class VerifyUser {
   constructor(private verifyUserUseCase: VerifyUserUseCase) {}
-  async verifyUser(req: Request, _res: Response) {
+  async verifyUser(req: Request, res: Response) {
     try {
+      // ** Decode Token ** //
       const token = req.cookies.token;
       if (!token) {
-        throw new NoTokenError();
+        throw new ErrorVerifyingToken();
       }
       console.log("token: ", token);
-      const decodedToken = await this.verifyUserUseCase.VerifyUser(token);
-      const id = decodedToken.id;
-      const role = decodedToken.role;
+      const id = parseInt(req.query.id as string, 10);
+      const role = req.query.role as string;
+      if (!id || !role) {
+        throw new UnauthorizedError();
+      }
       console.log("ID: ", id);
       console.log("Role: ", role);
       if (!id || !role) {
         throw new UnauthorizedError();
       }
+      const user = await this.verifyUserUseCase.VerifyUser(token);
+      if (!user) {
+        throw new UnauthorizedError();
+      }
+      res.status(200).json({
+        message: "User verified successfully",
+        user: user,
+        id: id,
+        role: role,
+      });
+    } catch (error: any) {
+      throw new Error("Something went wrong");
+    }
+  }
+}
+
+// ** This method verifies user after they click on the link sent to their email ** //
+// ** Verify User Email Controller ** //
+export class VerifyUserEmail {
+  constructor(private verifyUserEmailUseCase: VerifyUserEmailUseCase) {}
+  async verifyUserEmail(req: Request, res: Response) {
+    try {
+      const token = req.body.token as string;
+      if (!token) {
+        throw new ErrorVerifyingToken();
+      }
+      const user = await this.verifyUserEmailUseCase.VerifyUserEmail(token);
+      res.status(200).json({
+        message: "User verified successfully",
+        user: user,
+        token: token,
+      });
     } catch (error: any) {
       throw new Error("Something went wrong");
     }

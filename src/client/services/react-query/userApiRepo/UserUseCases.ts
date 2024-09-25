@@ -1,5 +1,5 @@
 // ** User Use Cases ** //
-import { INewUser, IRefreshToken, IVerifyUser } from "../../entities/user";
+import { INewUser, IRefreshToken, IUser } from "../../entities/user";
 import { IUserRepository } from "./IUserRepository";
 
 // ** Register User Use Case ** //
@@ -13,7 +13,7 @@ export class RegisterUserUseCase {
 // ** Login User Use Case ** //
 export class LoginUserUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(email: string, password: string): Promise<INewUser | null> {
+  async execute(email: string, password: string): Promise<IUser | null> {
     return this.userRepository.loginUser(email, password);
   }
 }
@@ -29,8 +29,8 @@ export class LogoutUserUseCase {
 // ** Verify User Use Case ** //
 export class VerifyUserUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(id: string): Promise<IVerifyUser> {
-    return this.userRepository.verifyUser(id);
+  async execute(id: string, role: string): Promise<IUser | null> {
+    return this.userRepository.verifyUser(id, role);
   }
 }
 

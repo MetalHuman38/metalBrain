@@ -83,7 +83,7 @@ const AllUsers = () => {
                 key={creator?.id ?? index}
                 className="flex-1 min-w-w[200px] w-full"
               >
-                <UserCard key={creator.id} users={creator} />
+                <UserCard key={creator.id} user={creator} />
               </li>
             ))}
           </ul>

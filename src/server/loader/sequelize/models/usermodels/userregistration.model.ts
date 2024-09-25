@@ -1,7 +1,5 @@
 import { DataTypes, Model, Optional } from "sequelize";
-import { generateAvatarUrl } from "../../../utils/avatar.js";
 import { sequelizeConInstance } from "../../sequelizeCon.js";
-import users from "../usermodels/users.model.js";
 
 interface UserRegistrationsAttributes {
   id: number;
@@ -46,11 +44,31 @@ user_registrations.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      validate: {
+        isUnique: async (value: string) => {
+          const user = await user_registrations.findOne({
+            where: { username: value },
+          });
+          if (user) {
+            throw new Error("Username already in use");
+          }
+        },
+      },
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isEmail: true,
+        isUnique: async (value: string) => {
+          const user = await user_registrations.findOne({
+            where: { email: value },
+          });
+          if (user) {
+            throw new Error("Email already in use");
+          }
+        },
+      },
     },
     password: {
       type: DataTypes.STRING,
@@ -66,49 +84,7 @@ user_registrations.init(
     tableName: "user_registrations",
     freezeTableName: true,
     timestamps: false,
-  },
-);
-
-user_registrations.afterCreate(
-  async (user: user_registrations & { new_user: string }) => {
-    try {
-      if (user) {
-        const spaceIndex = user.new_user.indexOf(" ");
-        const firstName =
-          spaceIndex !== -1
-            ? user.new_user.slice(0, spaceIndex)
-            : user.new_user;
-        const lastName =
-          spaceIndex !== -1 ? user.new_user.slice(spaceIndex + 1) : "";
-        const avatar = generateAvatarUrl(firstName, lastName);
-
-        await users.upsert({
-          first_name: firstName,
-          last_name: lastName,
-          username: user.username,
-          email: user.email,
-          password: user.password,
-          reset_password_token: "",
-          reset_password_expires: new Date(),
-          status: "active",
-          bio: "Write something about yourself",
-          joined_date: new Date(),
-          last_login: new Date(),
-          last_logout: new Date(),
-          last_activity: new Date(),
-          role: "user",
-          avatarUrl: avatar,
-          profile_picture: avatar,
-          user_registration_id: user.id,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
-      throw new Error("Error creating user");
-    }
-  },
+  }
 );
 
 await sequelize

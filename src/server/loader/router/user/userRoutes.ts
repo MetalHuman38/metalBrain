@@ -9,6 +9,7 @@ import {
   GetAllUsers,
   SearchUsers,
   GetAllUserCount,
+  VerifyUserEmail,
 } from "../../controller/user/authenticator.js";
 import {
   LoginUserUseCase,
@@ -20,14 +21,13 @@ import {
   GetAllUsersUseCase,
   SearchUsersUseCase,
   GetAllUsersCountUseCase,
+  VerifyUserEmailUseCase,
 } from "../../userrepo/userUseCases.js";
 import { SequelizeUserRepo } from "../../userrepo/sequelizeUserRepo.js";
 import { BcryptPasswordHandler } from "../../../services/bcryptPasswordHandler.js";
 import { JwtTokenService } from "../../../services/jwtTokenService.js";
-import {
-  InternalServerError,
-  UnauthorizedError,
-} from "../../utils/app-errors.js";
+import { InternalServerError } from "../../utils/app-errors.js";
+import EmailService from "../../../services/sendEmail.js";
 
 const router = express.Router();
 
@@ -35,13 +35,15 @@ const router = express.Router();
 const userRepository = new SequelizeUserRepo();
 const passwordHasher = new BcryptPasswordHandler();
 const jwtHandler = new JwtTokenService();
+const emailService = new EmailService();
 
 // ****************************************************************************************** //
 // ** register user use case ** //
 const registerUserUseCase = new RegisterUserUseCase(
   userRepository,
   passwordHasher,
-  jwtHandler
+  jwtHandler,
+  emailService
 );
 
 // ** login user use case ** //
@@ -56,6 +58,12 @@ const logoutUserUseCase = new LogoutUserUseCase(userRepository, jwtHandler);
 const refreshTokenUseCase = new RefreshTokenUseCase(userRepository, jwtHandler);
 // ** verify user use case ** //
 const verifyUserUseCase = new VerifyUserUseCase(userRepository, jwtHandler);
+
+// ** verify user email use case ** //
+const verifyUserEmailUseCase = new VerifyUserEmailUseCase(
+  userRepository,
+  jwtHandler
+);
 
 // ** get current user use case ** //
 const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
@@ -77,6 +85,7 @@ const refreshTokenController = new RefreshToken(refreshTokenUseCase);
 const logoutController = new LogoutUser(logoutUserUseCase);
 const getCurrentUserController = new GetCurrentUser(getCurrentUserUseCase);
 const verifyUserController = new VerifyUser(verifyUserUseCase);
+const verifyUserEmailController = new VerifyUserEmail(verifyUserEmailUseCase);
 const getAllUsersController = new GetAllUsers(getAllUsersUseCase);
 const searchUsersController = new SearchUsers(searchUsersUseCase);
 const getAllUsersCountController = new GetAllUserCount(getAllUsersCountUseCase);
@@ -112,26 +121,11 @@ router.post("/logout", async (req, res) => {
 // ** verify user route ** //
 router.get("/verify", async (req, res) => {
   await verifyUserController.verifyUser(req, res);
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      res.status(401).json({ message: "No token found" });
-    }
-    const decodedToken = await verifyUserUseCase.VerifyUser(token);
-    const id = decodedToken.id;
-    const role = decodedToken.role;
-    const user = await getCurrentUserUseCase.GetCurrentUser(decodedToken.id);
-    console.log("User from verify user route", user);
-    if (!id || !role) {
-      throw new UnauthorizedError();
-      return;
-    }
-    res.status(200).json({
-      message: "User verified successfully from verified Route",
-    });
-  } catch (error: any) {
-    console.log(error);
-  }
+});
+
+// ** Verify user email route ** //
+router.get("/verifyEmail", async (req, res) => {
+  await verifyUserEmailController.verifyUserEmail(req, res);
 });
 
 // ** get current user route ** //

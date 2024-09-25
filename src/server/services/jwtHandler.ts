@@ -1,5 +1,5 @@
 import { SignOptions, VerifyOptions } from "jsonwebtoken";
-import { IUserPayload } from "../loader/types";
+import { IEmailVerificationPayload, IUserPayload } from "../loader/types";
 
 export interface IJwtHandler {
   jwtGenerator(payload: IUserPayload): string;
@@ -11,6 +11,12 @@ export interface IJwtHandler {
     payload: IUserPayload,
     options: Partial<SignOptions>
   ): string;
+  jwtEmailVerificationGenerator(payload: IEmailVerificationPayload): string;
+  jwtVerifyEmailVerification(token: string): IEmailVerificationPayload;
+  jwtVerifyEmailVerification(
+    token: string,
+    options: Partial<VerifyOptions>
+  ): IEmailVerificationPayload;
 }
 
 export default IJwtHandler;

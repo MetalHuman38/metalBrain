@@ -20,7 +20,7 @@ export class AdminUseCase {
     try {
       const admins = await this.adminRepo.findbyRoleAndId(id, role);
       if (
-        admins.length === 0 ||
+        !admins.length ||
         !admins.some(
           (admin) => admin.role === "admin" || admin.role === "superadmin"
         )
@@ -78,10 +78,8 @@ export class RestrictedSuperAdminActionUseCase {
     try {
       const admins = await this.adminRepo.findbyRoleAndId(id, role);
       if (
-        admins.length === 0 ||
-        !admins.some(
-          (admin) => admin.role === "admin" || admin.role === "superadmin"
-        )
+        !admins.length ||
+        !admins.some((admin) => admin.role === "superadmin")
       ) {
         throw new SuperAdminOnlyError();
       }
@@ -118,7 +116,7 @@ export class VerifysuperAdminUseCase {
       const id = decodedToken.id as number;
       // ** Retrieve User Role From Token ** //
       const role = decodedToken.role as string;
-      if (!id || !role) {
+      if (!id || role !== "superadmin") {
         throw new UnauthorizedError();
       }
 

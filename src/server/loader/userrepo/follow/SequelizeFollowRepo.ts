@@ -9,64 +9,79 @@ import {
 import { Follow as FollowEntity } from "../follow/FollowEntity.js";
 import follows from "../../sequelize/models/usermodels/follow.model.js";
 import follow_counts from "../../sequelize/models/usermodels/followcount.model.js";
+import { Transaction } from "sequelize";
+import { sequelizeConInstance } from "../../sequelize/sequelizeCon.js";
 
 // ** Class to handle the logic and behavior of following a user ** //
 export class SequelizeFollowRepo implements IFollowRepository {
   // ** Method to follow a user ** //
-  async followUser(follow: Follow): Promise<Follow> {
-    const newFollow = await follows.create({
-      follower_id: follow.follower_id,
-      following_id: follow.following_id,
-      status: "following",
-      created_at: follow.created_at,
-    });
 
-    await follows.update(
-      {
-        status: "following",
-      },
-      {
-        where: {
+  async followUser(follow: Follow): Promise<Follow> {
+    // ** Create Instance of Sequelize ** //
+    const sequelize = sequelizeConInstance();
+    return sequelize.transaction(async (t: Transaction) => {
+      const newFollow = await follows.create(
+        {
           follower_id: follow.follower_id,
           following_id: follow.following_id,
+          status: "following",
+          created_at: follow.created_at,
         },
-      }
-    );
-    // ** Ensure follow_counts entries exist before incrementing ** //
-    await follow_counts.upsert({
-      user_id: follow.follower_id,
-      follower_count: 0,
-      following_count: 0,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+        { transaction: t }
+      );
 
-    await follow_counts.upsert({
-      user_id: follow.following_id,
-      follower_count: 0,
-      following_count: 0,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+      await follows.update(
+        {
+          status: "following",
+        },
+        {
+          where: {
+            follower_id: follow.follower_id,
+            following_id: follow.following_id,
+          },
+          transaction: t,
+        }
+      );
 
-    // ** Increment the follower count ** //
-    await follow_counts.increment("follower_count", {
-      by: 1,
-      where: { user_id: follow.following_id },
-    });
+      // ** Fetch current counts to avoid resetting ** //
+      const followerUserCount = await follow_counts.findOne({
+        where: { user_id: follow.follower_id },
+      });
 
-    // ** Increment the following count ** //
-    await follow_counts.increment("following_count", {
-      by: 1,
-      where: { user_id: follow.follower_id },
-    });
+      const followingUserCount = await follow_counts.findOne({
+        where: { user_id: follow.following_id },
+      });
 
-    return new FollowEntity(
-      newFollow.follower_id,
-      newFollow.following_id,
-      newFollow.status,
-      newFollow.created_at
-    );
+      // ** Upsert for the follower user (current user) ** //
+      await follow_counts.upsert(
+        {
+          user_id: follow.follower_id,
+          follower_count: followerUserCount?.follower_count || 0, // Keep existing value
+          following_count: (followerUserCount?.following_count || 0) + 1, // Increment following count
+          created_at: followerUserCount?.created_at || new Date(),
+          updated_at: new Date(),
+        },
+        { transaction: t }
+      );
+
+      // ** Upsert for the followed user ** //
+      await follow_counts.upsert(
+        {
+          user_id: follow.following_id,
+          follower_count: (followingUserCount?.follower_count || 0) + 1, // Increment follower count
+          following_count: followingUserCount?.following_count || 0, // Keep existing value
+          created_at: followingUserCount?.created_at || new Date(),
+          updated_at: new Date(),
+        },
+        { transaction: t }
+      );
+      return new FollowEntity(
+        newFollow.follower_id,
+        newFollow.following_id,
+        newFollow.status,
+        newFollow.created_at
+      );
+    });
   }
 
   // ** Method to unfollow a user ** //

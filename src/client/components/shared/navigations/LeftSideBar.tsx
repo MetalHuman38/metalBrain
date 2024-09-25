@@ -1,16 +1,18 @@
-import { sidebarLinks } from "@/client/services/constants";
+import { RouteAccess, sidebarLinks } from "@/client/services/constants";
 import { useEffect } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLogoutUserMutation } from "@/client/services/react-query/userQueryAndMutations/UserQueriesMutations";
 import { INavLink } from "@/client/types";
 import { useUserContext } from "@/client/services/context/user/UseContext";
+import { useMotion } from "@/client/components/hooks/use-motion";
 
 const LeftSideBar = () => {
   const { user, isUserLoading } = useUserContext();
   const { mutate: signOut, isSuccess } = useLogoutUserMutation();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { motion, animations, isOpen, toggleLeftSidebar } = useMotion(); // Use the hook
 
   useEffect(() => {
     if (isSuccess) {
@@ -28,17 +30,39 @@ const LeftSideBar = () => {
   }
 
   return (
-    <nav className="leftsidebar">
-      <div className="flex flex-col gap-11">
-        <Link to="/" className="flex gap-3 items-center">
-          <img
-            src="/assets/images/mylogo1.png"
-            alt="logo"
-            loading="lazy"
-            width={50}
-            height={36}
-          />
-        </Link>
+    <motion.nav
+      className={`leftsidebar`}
+      initial="hidden"
+      animate="visible"
+      variants={animations.slideInFromLeft}
+    >
+      <div className="">
+        <div className="flex gap-11 mb-8 justify-between">
+          <Link to="/" className="flex gap-3 items-center">
+            <img
+              src="/assets/images/mylogo1.png"
+              alt="logo"
+              loading="lazy"
+              width={50}
+              height={36}
+            />
+          </Link>
+          <motion.div
+            className={`relative flex flex-center transition-all duration-300 ease-in-out flex-shrink-0 ${isOpen ? "w-56" : "w-14"}`}
+          >
+            <Button onClick={toggleLeftSidebar}>
+              <motion.img
+                src="/assets/icons/arrow.svg"
+                alt="menu"
+                loading="lazy"
+                className={`h-12 w-12 ${isOpen ? "rotate-180" : ""}`}
+                variants={animations.toggleCollapse}
+                whileHover={{ scale: 1.1 }} // Hover effect
+                whileTap={{ scale: 0.9 }} // Tap effect
+              />
+            </Button>
+          </motion.div>
+        </div>
         {!user ? (
           <p>Loading user data...</p>
         ) : (
@@ -57,7 +81,7 @@ const LeftSideBar = () => {
             />
             <div className="flex flex-col">
               <p className="body-bold">
-                {user.first_name} {user.last_name}
+                {user.first_name} {user?.last_name}
               </p>
               <p>@{user.username}</p>
             </div>
@@ -66,8 +90,13 @@ const LeftSideBar = () => {
 
         <ul className="flex flex-col gap-6">
           {sidebarLinks.map((link: INavLink) => {
-            const isActive = pathname === link.route;
-            const isExternalLink = link.target === "_blank";
+            const isActive = RouteAccess.isActive(pathname, link.route);
+            const isExternalLink = RouteAccess.isExternalLink(
+              link.target ?? ""
+            );
+            // ** Role Based Access Helper *//
+            if (!RouteAccess.hasAccess(link.allowedRoles, user.role))
+              return null;
             return (
               <li
                 key={link.label}
@@ -115,7 +144,7 @@ const LeftSideBar = () => {
           </Button>
         </ul>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

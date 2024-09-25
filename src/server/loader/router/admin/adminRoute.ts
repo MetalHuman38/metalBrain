@@ -22,6 +22,7 @@ const logger = new WinstonLogger();
 const authorizations = new Authorizations(adminPromoteUseCase, logger);
 const superAdminController = new SuperAdminController(restrictedAction, logger);
 
+// ** Role Authorization Middleware ** //
 router.get(
   "/protected",
   (req, res, next) => roleAuthorizationMiddleware.handle(req, res, next),
@@ -29,7 +30,7 @@ router.get(
 );
 
 // ** Promote to superadmin. Method should update roles dynamically and manage admin permissions efficiently ** //
-router.post("/promote", (req, res) =>
+router.put("/promote", (req, res) =>
   authorizations.promoteToSuperAdmin(req, res)
 );
 

@@ -3,14 +3,17 @@ import { useUserContext } from "@/client/services/context/user/UseContext";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const AuthLayout = () => {
-  const { isUserAuthenticated } = useUserContext();
+  const { user, isUserAuthenticated } = useUserContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isUserAuthenticated) {
+    // If user is authenticated and is superadmin, navigate to /admin
+    if (isUserAuthenticated && user?.role === "superadmin") {
+      navigate("/dashboard", { replace: true });
+    } else if (isUserAuthenticated) {
       navigate("/", { replace: true });
     }
-  }, [isUserAuthenticated, navigate]);
+  }, [isUserAuthenticated, navigate, user?.role]);
 
   return (
     <>

@@ -3,9 +3,10 @@ import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./_auth/AuthLayout";
 import { SignInForm, SignUpForm } from "./_auth/forms";
 import RootLayout from "./_root/RootLayout";
-import { Home } from "./_root/pages";
+import { Home, NotFound } from "./_root/pages";
 import RequireAuthentication from "./_auth/RequireAuthentication";
 import { AllUsers, ExploreUsers, Profile } from "./_root/pages/users";
+import { DashBoard } from "./_root/pages/admin";
 
 const App = () => {
   return (
@@ -24,7 +25,10 @@ const App = () => {
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/all-users" element={<AllUsers />} />
             <Route path="/explore" element={<ExploreUsers />} />
+            <Route path="/dashboard" element={<DashBoard />} />
           </Route>
+          {/* 404 route */}
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </main>

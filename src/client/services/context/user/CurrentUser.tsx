@@ -4,14 +4,13 @@ import { useVerifyUserMutation } from "../../react-query/userQueryAndMutations/U
 import { IUser, users } from "../../entities/user";
 import { useEffect, useState } from "react";
 import { AxiosConfig } from "@/client/axios/AxiosConfig";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const CurrentUser = () => {
   const { setIsUserAuthenticated } = useUserContext();
   const [user, setUser] = useState<users | IUser>();
-  const verifyUser = useVerifyUserMutation();
+  const verifyUser = useVerifyUserMutation(user?.id ?? "", user?.role ?? "");
   const navigate = useNavigate();
-  const { id } = useParams();
 
   useEffect(() => {
     if (user) {
@@ -31,7 +30,7 @@ export const CurrentUser = () => {
           AxiosConfig.defaults.headers.common["Authorization"] =
             `Bearer ${token}`;
         }
-        const user = await verifyUser.mutateAsync(id as string);
+        const user = await verifyUser.refetch();
         signal;
         if (isMounted && user) {
           setIsUserAuthenticated(true);

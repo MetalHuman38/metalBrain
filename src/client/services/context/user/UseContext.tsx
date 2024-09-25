@@ -1,4 +1,4 @@
-import { IUser, IVerifyUser } from "../../entities/user";
+import { IUser } from "../../entities/user";
 import React, {
   createContext,
   Dispatch,
@@ -16,7 +16,7 @@ export type UserContextType = {
   setUser: (user: IUser | null) => void;
   profileUser: IUser | null;
   setProfileUser: (user: IUser | null) => void;
-  setVerifiedUser: (verifiedUser: IVerifyUser) => void;
+  setVerifiedUser: (verifiedUser: IUser) => void;
   isUserLoading: boolean;
   setIsUserLoading: (isLoading: boolean) => void;
   isUserAuthenticated: boolean;
@@ -59,29 +59,38 @@ export default function UserProvider({ children }: UserProviderProps) {
     return storedProfileUser ? JSON.parse(storedProfileUser) : null;
   });
 
-  const [verifiedUser, setVerifiedUser] = useState<IVerifyUser | null>(null);
+  const [verifiedUser, setVerifiedUser] = useState<IUser | null>(null);
   const [isUserLoading, setIsUserLoading] = useState<boolean>(false);
   const [isUserAuthenticated, setIsUserAuthenticated] =
     useState<boolean>(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const { id } = useParams();
-  const verifyUserMutation = useVerifyUserMutation();
+  const verifyUserMutation = useVerifyUserMutation(
+    user?.id ?? "",
+    user?.role ?? ""
+  );
 
   const verifyUser = useCallback(async () => {
     const token = sessionStorage.getItem("token");
     if (!token) {
       setIsUserAuthenticated(false);
       setUser(null);
+      setProfileUser(null);
       setIsUserLoading(false);
       return;
     }
-    setIsUserLoading(true);
     try {
-      const response = await verifyUserMutation.mutateAsync(id as string);
-      if (response) {
-        verifiedUser && setVerifiedUser(response);
+      setIsUserLoading(true);
+      const response = await verifyUserMutation.refetch();
+      if (response.data) {
+        verifiedUser && setVerifiedUser(response.data);
         setIsUserAuthenticated(true);
-        console.log("verify user endpoint result", response);
+        setUser(response.data);
+        setProfileUser(response.data);
+      } else {
+        setIsUserAuthenticated(false);
+        setUser(null);
+        setProfileUser(null);
       }
     } catch (error) {
       console.error(error);
