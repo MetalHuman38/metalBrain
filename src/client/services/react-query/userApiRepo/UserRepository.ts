@@ -236,13 +236,13 @@ export class UserRepository implements IUserRepository {
   // ** This method fetches all user activities ** //
   async fetchUserActivities(): Promise<any> {
     try {
-      const response = await AxiosConfig.get("/userActivities", {
+      const response = await AxiosConfig.get("/usersActivities", {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
-      return response.data;
+      return response.data.activities;
     } catch (error) {
       throw new Error("Unable to fetch user activities");
     }

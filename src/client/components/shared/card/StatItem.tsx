@@ -8,7 +8,7 @@ const StatItem = ({ title, value, color, icon }: StatItemsProps) => {
       className={`shadow-lg rounded-lg p-4 ${color}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      variants={animations.staggerChild}
+      variants={animations.slideInFromLeft}
       transition={{ duration: 0.5 }}
     >
       <div className="flex flex-center sm:p-2">

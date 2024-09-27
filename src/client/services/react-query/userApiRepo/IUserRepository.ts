@@ -19,7 +19,7 @@ export interface IUserRepository {
   searchUsers(searchValue: string): Promise<any>;
   getAllUsersCount(limit: number, offset: number): Promise<any>;
   // ** This method fetches all user activities ** //
-  fetchUserActivities(): Promise<IUserActivities>;
+  fetchUserActivities(): Promise<IUserActivities[]>;
 }
 
 export default IUserRepository;

@@ -77,11 +77,13 @@ export interface IGetCurrentUser {
 }
 
 // ** User Activities Interface ** //
-export interface IUserActivities {
+export type IUserActivities = Array<{
   id: number;
   user_id: number;
   activity: string;
   activity_type: string;
   created_at: Date;
-  metadata: string;
-}
+  metadata: {
+    [key: string]: string;
+  };
+}>;

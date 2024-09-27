@@ -1,7 +1,7 @@
 import { IUserRepository } from "./IUserRepository.js";
 import { IEmailService, IPasswordHasher } from "../../services/index.js";
 import { IJwtHandler } from "../../services/jwtHandler.js";
-import { INewUser, IUser } from "./index.js";
+import { INewUser, IUser, IUserActivities } from "./index.js";
 // ** Error Thrown are custom errors imported from app-errors.js ** //
 import {
   EmailAlreadyInUse,
@@ -611,7 +611,7 @@ export class SendVerificationEmailUseCase {
 export class GetUsersActivitiesUseCase {
   constructor(private userRepository: IUserRepository) {}
 
-  async GetAllUsersActivities(): Promise<any> {
+  async GetAllUsersActivities(): Promise<IUserActivities[]> {
     try {
       // ** Fetch all user activities ** //
       const activities = await this.userRepository.fetchUserActivities();

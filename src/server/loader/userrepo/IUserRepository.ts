@@ -54,7 +54,7 @@ export interface IUserRepository {
   sendVerificationEmail(email: string, token: string): Promise<void>;
 
   // ** This method fetches all user activities ** //
-  fetchUserActivities(): Promise<IUserActivities>;
+  fetchUserActivities(): Promise<IUserActivities[]>;
 }
 
 export default IUserRepository;

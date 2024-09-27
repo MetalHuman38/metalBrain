@@ -82,7 +82,7 @@ export class GetAllUsersCountUseCase {
 // ** Get all user activities Use Case ** //
 export class GetUserActivitiesUseCase {
   constructor(private userRepository: IUserRepository) {}
-  async execute(): Promise<IUserActivities> {
+  async execute(): Promise<IUserActivities[]> {
     return this.userRepository.fetchUserActivities();
   }
 }

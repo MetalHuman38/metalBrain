@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -449,7 +449,17 @@
   }
 
   .stats {
-    @apply bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg border border-dark-4 rounded-[20px] p-5;
+    @apply bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg border border-gray-700 rounded-xl p-5;
+  }
+
+  .charts {
+    @apply bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl border border-gray-700;
+  }
+  .line-chart {
+    @apply w-full h-[300px];
+  }
+  .isActive {
+    @apply absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-600 border-white;
   }
 }
 
