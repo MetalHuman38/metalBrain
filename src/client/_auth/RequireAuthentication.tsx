@@ -12,7 +12,7 @@ const RequireAuthentication = () => {
     return <Loader />;
   }
 
-  if (!isUserAuthenticated) {
+  if (!isUserAuthenticated && !isUserLoading) {
     return (
       <Navigate to="/sign-in" state={{ from: location.pathname }} replace />
     );

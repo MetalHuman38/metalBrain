@@ -4,4 +4,9 @@ export type INavLink = {
   label: string;
   target?: string;
   rel: string;
+  allowedRoles: string[];
 };
+
+export interface HeaderProps {
+  title: string;
+}

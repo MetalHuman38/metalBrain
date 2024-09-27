@@ -15,11 +15,11 @@ const useRefreshToken = () => {
       setAuthenticatedUser((user) => {
         return {
           ...user,
-          refreshToken: response.data.refreshToken,
+          refreshtoken: response.data.refreshtoken,
         };
       });
-      const newAccessToken = response.data.refreshToken;
-      sessionStorage.setItem("refreshToken", newAccessToken);
+      const newAccessToken = response.data.refreshtoken;
+      sessionStorage.setItem("refreshtoken", newAccessToken);
       AxiosConfigPrivate.defaults.headers.common["Authorization"] =
         `Bearer ${newAccessToken}`;
       return newAccessToken;

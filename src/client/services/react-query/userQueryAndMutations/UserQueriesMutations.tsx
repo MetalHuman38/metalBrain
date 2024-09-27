@@ -6,6 +6,7 @@ import {
   GetAllUsersCountUseCase,
   GetAllUsersUseCase,
   GetCurrentUserUseCase,
+  GetUserActivitiesUseCase,
   LoginUserUseCase,
   LogoutUserUseCase,
   RefreshTokenUseCase,
@@ -50,13 +51,14 @@ export const useLogoutUserMutation = () => {
 };
 
 // ** Verify User Mutation ** //
-export const useVerifyUserMutation = () => {
+export const useVerifyUserMutation = (id: string, role: string) => {
   const userRepository = new UserRepository();
   const verifyUserUseCase = new VerifyUserUseCase(userRepository);
-  return useMutation({
-    mutationFn: (id: string) => {
-      return verifyUserUseCase.execute(id);
-    },
+  return useQuery({
+    queryKey: [UserQueryKeys.VERIFY_USER],
+    queryFn: () =>
+      verifyUserUseCase.execute(id, role).then((response) => response),
+    enabled: !!id && !!role,
   });
 };
 
@@ -120,6 +122,19 @@ export const useGetAllUsersCountQuery = (limit: number, offset: number) => {
   });
 };
 
+// ** Get All User Activities Mutation using queryKey ** //
+export const useGetAllUserActivitiesQuery = () => {
+  const userRepository = new UserRepository();
+  const getAllUserActivitiesUseCase = new GetUserActivitiesUseCase(
+    userRepository
+  );
+  return useQuery({
+    queryKey: [UserQueryKeys.GET_ALL_USER_ACTIVITIES],
+    queryFn: () =>
+      getAllUserActivitiesUseCase.execute().then((response) => response),
+  });
+};
+
 export default {
   useRegisterUserMutation,
   useLoginUserMutation,
@@ -130,4 +145,5 @@ export default {
   useGetAllUsersQuery,
   useSearchUsersQuery,
   useGetAllUsersCountQuery,
+  useGetAllUserActivitiesQuery,
 };

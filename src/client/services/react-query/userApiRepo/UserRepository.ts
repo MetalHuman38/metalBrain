@@ -2,12 +2,7 @@
 // ** UserRepository.ts ** //
 import { IUserRepository } from "./IUserRepository";
 import { AxiosConfig } from "../../../axios/AxiosConfig";
-import {
-  INewUser,
-  IRefreshToken,
-  IUser,
-  IVerifyUser,
-} from "../../entities/user";
+import { INewUser, IRefreshToken, IUser } from "../../entities/user";
 import {
   ErrorRefreshingToken,
   ErrorVerifyingToken,
@@ -36,7 +31,7 @@ export class UserRepository implements IUserRepository {
   }
 
   // ** This method is used to login a user ** //
-  async loginUser(email: string, password: string): Promise<INewUser | null> {
+  async loginUser(email: string, password: string): Promise<IUser | null> {
     try {
       const response = await AxiosConfig.post(
         "/login",
@@ -51,6 +46,7 @@ export class UserRepository implements IUserRepository {
       sessionStorage.setItem("token", response.data.token);
       sessionStorage.setItem("refreshtoken", response.data.refreshtoken);
       sessionStorage.setItem("user", JSON.stringify(response.data.user));
+      console.log("Response from login user", response.data.user);
       AxiosConfig.defaults.headers.common["Authorization"] =
         `Bearer ${response.data.token}`;
       return response.data;
@@ -104,17 +100,17 @@ export class UserRepository implements IUserRepository {
   }
 
   // ** This method verifies a logged in user and persists the user details ** //
-  async verifyUser(id: string): Promise<IVerifyUser> {
+  async verifyUser(id: string, role: string): Promise<IUser> {
     try {
       const response = await AxiosConfig.get("/verify", {
-        params: { id },
+        params: { id, role },
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
       if (response.status === 200) {
-        return response.data;
+        return response.data.user;
       }
       return response.data;
     } catch (error) {
@@ -234,6 +230,21 @@ export class UserRepository implements IUserRepository {
       return response.data;
     } catch (error) {
       throw new Error("Unable to get users count");
+    }
+  }
+
+  // ** This method fetches all user activities ** //
+  async fetchUserActivities(): Promise<any> {
+    try {
+      const response = await AxiosConfig.get("/usersActivities", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data.activities;
+    } catch (error) {
+      throw new Error("Unable to fetch user activities");
     }
   }
 }

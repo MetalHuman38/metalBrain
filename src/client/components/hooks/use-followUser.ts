@@ -7,6 +7,7 @@ import {
 } from "@/client/services/react-query/followQueryAndMutations/FollowQueryAndMutation";
 import { Follow } from "@/client/services/react-query/followApiRepo/FollowEntity";
 import { useFollow } from "@/client/components/hooks/use-follow";
+import { useState } from "react";
 
 export const useProfileFollowStatus = (currentuser: any, user: any) => {
   const debouncedFollower_id = useDebounce(String(user?.id) || "", 500);
@@ -29,10 +30,19 @@ export const useProfileFollowStatus = (currentuser: any, user: any) => {
     status
   );
 
-  console.log("followStatus", followStatus);
+  const [isMutating, setIsMutating] = useState(false); // Track mutation status
 
   const handleFollowUser = async () => {
-    if (!currentuser || !user) return;
+    if (
+      !currentuser ||
+      !user ||
+      isMutating ||
+      followUserMutation.isPending ||
+      unfollowUserMutation.isPending
+    ) {
+      return; // Prevent multiple triggers
+    }
+    setIsMutating(true);
     const follow = new Follow(
       Number(user.id),
       Number(currentuser.id),
@@ -49,6 +59,8 @@ export const useProfileFollowStatus = (currentuser: any, user: any) => {
       }
     } catch (error) {
       console.log("Error following user", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 

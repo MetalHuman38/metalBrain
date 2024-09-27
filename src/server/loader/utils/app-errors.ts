@@ -187,6 +187,19 @@ export class EmailAlreadyInUse extends AppError {
   }
 }
 
+// ** Conflict Error ** //
+export class UserNameAlreadyInUse extends AppError {
+  constructor() {
+    super(
+      "The username you are trying to use is already in use. Please try another username",
+      STATUS_CODES.CONFLICT,
+      true,
+      "Conflict",
+      "The username you are trying to use is already in use. Please try another username"
+    );
+  }
+}
+
 // ** Internal Server Error ** //
 export class InternalServerError extends AppError {
   constructor() {

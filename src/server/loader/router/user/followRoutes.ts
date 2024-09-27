@@ -13,7 +13,7 @@ const followController = new FollowController(followUseCase);
 // ** Bind the methods to the controller instance ** //
 
 // ** Follow routes ** //
-router.post("/follow", followController.followUser.bind(followController));
+router.put("/follow", followController.followUser.bind(followController));
 
 // ** Unfollow routes ** //
 router.delete(

@@ -14,7 +14,7 @@ const SearchAllUserResult = () => {
   }
 
   if (searchResults && searchResults.length > 0) {
-    return <GridUserList users={searchResults} showUser />;
+    return <GridUserList user={searchResults} showUser />;
   }
 
   return (

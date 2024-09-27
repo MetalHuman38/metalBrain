@@ -14,7 +14,7 @@ describe("UserRepository - Verify User Use Case", () => {
       data: verifyUser,
     });
 
-    const result = await userRepository.verifyUser("1");
+    const result = await userRepository.verifyUser("1", "admin");
 
     // Expect the login to return user data (e.g., a JWT token)
     expect(result).toEqual(verifyUser);
@@ -35,7 +35,7 @@ describe("UserRepository - Verify User Use Case", () => {
     });
 
     expect.assertions(1);
-    await userRepository.verifyUser("").catch((error) => {
+    await userRepository.verifyUser("", "").catch((error) => {
       expect(error.message).toBe("Unable to verify user! Something went wrong");
     });
   });

@@ -1,11 +1,13 @@
 import user_registrations from "../sequelize/models/usermodels/userregistration.model.js";
+import UserActivitiesAttributes from "../sequelize/models/usermodels/useractivities.model.js";
 import UserRegistrationsAttributes from "../sequelize/models/usermodels/userregistration.model.js";
 import UserAttributes from "../sequelize/models/usermodels/users.model.js";
-import { INewUser, IVerifyUser } from "./index.js";
+import { INewUser, IUser } from "./index.js";
 import IUserRepository from "../userrepo/IUserRepository.js";
 import users from "../sequelize/models/usermodels/users.model.js";
 import { UnauthorizedError } from "../utils/app-errors.js";
 import { Op } from "sequelize";
+import user_activities from "../sequelize/models/usermodels/useractivities.model.js";
 
 export class SequelizeUserRepo implements IUserRepository {
   // ** This method is used to create a new user ** //
@@ -18,6 +20,32 @@ export class SequelizeUserRepo implements IUserRepository {
       created_at: new Date(),
     });
     return newUser.toJSON() as UserRegistrationsAttributes;
+  }
+
+  // ** This method is used to update a user ** //
+  async upsertUser(user: UserAttributes): Promise<void> {
+    await users.upsert(user as UserAttributes);
+  }
+
+  // ** This method is used to authenticate a logged in user and return the user details ** //
+  async loginUser(email: string, password: string): Promise<IUser | null> {
+    const user = await users.findOne({
+      where: { email, password },
+      attributes: ["id", "new_user", "username", "email", "created_at"],
+    });
+    return user ? (user.toJSON() as UserAttributes) : null;
+  }
+
+  // ** This method is used to verify a user ** //
+  async verifyUser(token: string): Promise<void> {
+    console.log("Verifying user with token: ", token);
+    return;
+  }
+
+  // ** This method is used to verify a user's email ** //
+  async verifyUserEmail(token: string): Promise<void> {
+    console.log("Verifying user email with token: ", token);
+    return;
   }
 
   // ** This method findUsersById is used to authenticate a logged in user and return the user details ** //
@@ -46,41 +74,16 @@ export class SequelizeUserRepo implements IUserRepository {
     return user ? (user.toJSON() as UserAttributes) : null;
   }
 
-  // ** MUST BE REMOVED ** //
-  async verifyUser(id: string): Promise<IVerifyUser | null> {
-    const user = await users.findOne({
-      where: { id: id },
-      attributes: [
-        "id",
-        "first_name",
-        "last_name",
-        "username",
-        "email",
-        "status",
-        "bio",
-        "last_activity",
-        "role",
-        "avatarUrl",
-        "profile_picture",
-        "user_registration_id",
-        "created_at",
-      ],
-    });
-    if (!user) {
-      throw new UnauthorizedError();
-    }
-    return user
-      ? ({
-          ...user.toJSON(),
-          token: "token",
-        } as IVerifyUser)
-      : null;
-  }
-
   // ** This method is used to authenticate a logged in user and return the user details ** //
-  async findUserByEmail(email: string): Promise<users | null> {
+  async findUserByEmail(email: string): Promise<IUser | null> {
     const user = await users.findOne({ where: { email } });
     return user ? (user.toJSON() as UserAttributes) : null;
+  }
+
+  // ** This method is used to find a user by username ** //
+  async findUserName(username: string): Promise<user_registrations | null> {
+    const user = await user_registrations.findOne({ where: { username } });
+    return user ? (user.toJSON() as UserRegistrationsAttributes) : null;
   }
 
   // ** This method is seperate from the below method to allow for a more secure way of finding a user by id ** //
@@ -113,18 +116,6 @@ export class SequelizeUserRepo implements IUserRepository {
     });
     if (!user) return null;
     return user ? (user.toJSON() as UserAttributes) : null;
-  }
-
-  // ** This method is used to authenticate a logged in user and return the user details ** //
-  async loginUser(
-    email: string,
-    password: string
-  ): Promise<user_registrations | null> {
-    const user = await user_registrations.findOne({
-      where: { email, password },
-      attributes: ["id", "new_user", "username", "created_at"],
-    });
-    return user ? (user.toJSON() as UserRegistrationsAttributes) : null;
   }
 
   // ** This method is used to authenticate a logged in user and return the user details
@@ -252,6 +243,56 @@ export class SequelizeUserRepo implements IUserRepository {
     } catch (error) {
       console.log("Error getting all users in sequelize repo", error);
       throw new Error("Error getting all users");
+    }
+  }
+
+  // ** This method Update a single row "status" column in the users table after verifying registered user email ** //
+  async updateUserStatus(id: number): Promise<void> {
+    try {
+      await users.update(
+        { status: "verified" },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return;
+    } catch (error) {
+      console.log("Error updating user status in sequelize repo", error);
+      throw new Error("Error updating user status");
+    }
+  }
+
+  // ** This method sends verification email to user ** //
+  async sendVerificationEmail(email: string, token: string): Promise<void> {
+    console.log("Sending verification email to: ", email);
+    console.log("Verification token: ", token);
+    return;
+  }
+
+  // ** This method fetches all user activities ** //
+  async fetchUserActivities(): Promise<any> {
+    try {
+      const userActivitiesArray = await user_activities.findAll({
+        attributes: [
+          "id",
+          "user_id",
+          "activity",
+          "activity_type",
+          "created_at",
+          "metadata",
+        ],
+      });
+      if (!userActivitiesArray) {
+        throw new Error("User activities not found");
+      }
+      return userActivitiesArray.map((user) =>
+        user.toJSON()
+      ) as UserActivitiesAttributes[];
+    } catch (error) {
+      console.log("Error fetching user activities in sequelize repo", error);
+      throw new Error("Error fetching user activities");
     }
   }
 }

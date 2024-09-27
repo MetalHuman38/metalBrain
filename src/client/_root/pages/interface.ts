@@ -9,6 +9,6 @@ export interface StatBlockProps {
 
 // ** User card Props Interface for UserCard Component ** //
 export type UserCardProps = {
-  users: IUser | null;
+  user: IUser | null;
   showUser?: boolean;
 };

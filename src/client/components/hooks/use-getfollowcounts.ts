@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetFollowerCountsQuery } from "@/client/services/react-query/followQueryAndMutations/FollowQueryAndMutation";
 import { useDebounce } from "@/client/components/hooks/use-debounce";
 
@@ -9,18 +9,29 @@ export const useGetFollowCounts = (currentuser: any, user: any) => {
     useGetFollowerCountsQuery(Number(debouncedFollowing_id));
   const { data: following_count, refetch: refetchFollowingCount } =
     useGetFollowerCountsQuery(Number(debouncedFollower_id));
-  const [setFollowerCount, setFollowingCount] = useState<number>(0);
+  const [followerCount, setFollowerCount] = useState<number>(0);
+  const [followingCount, setFollowingCount] = useState<number>(0);
+
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (currentuser?.id && user?.id) {
+    if (currentuser?.id && user?.id && !hasFetched.current) {
       refetchFollowerCount();
       refetchFollowingCount();
+      hasFetched.current = true;
     }
-  }, [currentuser?.id, user?.id]);
+  }, [currentuser?.id, user?.id, refetchFollowerCount, refetchFollowingCount]);
+
+  useEffect(() => {
+    if (typeof follower_count === "number") setFollowerCount(follower_count);
+    if (typeof following_count === "number") setFollowingCount(following_count);
+  }, [follower_count, following_count]);
 
   return {
     follower_count,
     following_count,
+    followerCount,
+    followingCount,
     setFollowerCount,
     setFollowingCount,
   };

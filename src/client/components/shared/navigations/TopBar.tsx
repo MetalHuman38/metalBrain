@@ -4,11 +4,13 @@ import { useUserContext } from "@/client/services/context/user/UseContext";
 import { useLogoutUserMutation } from "@/client/services/react-query/userQueryAndMutations/UserQueriesMutations";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMotion } from "@/client/components/hooks/use-motion";
 
 const TopBar = () => {
   const { user, isUserLoading } = useUserContext();
   const { mutate: signOut, isSuccess } = useLogoutUserMutation();
   const navigate = useNavigate();
+  const { motion, animations } = useMotion(); // Use the hook
 
   useEffect(() => {
     if (isSuccess) {
@@ -20,9 +22,13 @@ const TopBar = () => {
   if (isUserLoading) {
     return <p>Loading user data...</p>;
   }
-
   return (
-    <section className="topbar">
+    <motion.section
+      className="topbar"
+      initial="hidden"
+      animate="visible"
+      variants={animations.slideInFromTop}
+    >
       <div className="flex-between py-4 px-5">
         <Link to="/" className="flex gap-3 items-center">
           <img
@@ -58,7 +64,7 @@ const TopBar = () => {
           )}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
