@@ -15,7 +15,7 @@ export const getStatData = (): stats[] => [
   },
   {
     title: "Total Comments",
-    value: "100000",
+    value: "10000",
     icon: "/assets/icons/chat.svg",
     color: "bg-light-4",
   },

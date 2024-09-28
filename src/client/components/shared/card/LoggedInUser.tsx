@@ -7,8 +7,8 @@ const LoggedInUser = () => {
   return (
     <div className="charts">
       <div className="flex items-center justify-center bg-sky-900 bg-opacity-20 backdrop-blur-md shadow-lg border-b border-gray-700">
-        <h2 className="text-2xl font-semibold text-center text-gray-400 py-4">
-          active user
+        <h2 className="text-2xl font-semibold text-center text-gray-300 py-4">
+          active users
         </h2>
       </div>
       <div className="flex items-center p-4">

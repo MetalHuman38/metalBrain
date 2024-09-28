@@ -1,12 +1,17 @@
 import "../globals.css";
 import { Route, Routes } from "react-router-dom";
-import AuthLayout from "./_auth/AuthLayout";
+import { AuthLayout, RequireAuthentication, RequireSuperAdmin } from "./_auth";
 import { SignInForm, SignUpForm } from "./_auth/forms";
 import RootLayout from "./_root/RootLayout";
-import { Home, NotFound } from "./_root/pages";
-import RequireAuthentication from "./_auth/RequireAuthentication";
+import { Home, NotFound, Unauthorized } from "./_root/pages";
 import { AllUsers, ExploreUsers, Profile } from "./_root/pages/users";
-import { DashBoard } from "./_root/pages/admin";
+import {
+  AutoDeleteUser,
+  CreateUser,
+  DashBoard,
+  ManageRoles,
+  UpgradeUser,
+} from "./_root/pages/admin";
 
 const App = () => {
   return (
@@ -16,6 +21,7 @@ const App = () => {
         <Route element={<AuthLayout />}>
           <Route path="/sign-in" element={<SignInForm />} />
           <Route path="/sign-up" element={<SignUpForm />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
         </Route>
 
         {/**  Private Routes */}
@@ -27,9 +33,18 @@ const App = () => {
             <Route path="/explore" element={<ExploreUsers />} />
             <Route path="/dashboard" element={<DashBoard />} />
           </Route>
-          {/* 404 route */}
-          <Route path="*" element={<NotFound />} />
         </Route>
+
+        {/** Super Admin Routes */}
+        <Route element={<RequireSuperAdmin />}>
+          <Route path="/admin/create-user" element={<CreateUser />} />
+          <Route path="/admin/update-user" element={<UpgradeUser />} />
+          <Route path="/admin/manage-roles" element={<ManageRoles />} />
+          <Route path="/admin/delete-user" element={<AutoDeleteUser />} />
+        </Route>
+
+        {/* 404 route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </main>
   );

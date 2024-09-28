@@ -12,7 +12,7 @@ import { IChartData } from "@/client/services/entities/user";
 import { useGetUserActivities } from "../../hooks/use-getuseractivities";
 import { getUserActivityChartData } from "../../hooks/use-getchartdata";
 
-const UserStats = () => {
+export const UserStats = () => {
   const { userActivities, isLoading, error } = useGetUserActivities();
   const { motion } = useMotion();
 
@@ -48,7 +48,7 @@ const UserStats = () => {
       className="charts"
     >
       <motion.div className="flex justify-center py-2">
-        <h2 className="text-2xl font-semibold text-center text-gray-400">
+        <h2 className="text-2xl font-semibold text-center text-gray-300">
           user activities
         </h2>
       </motion.div>
@@ -80,7 +80,7 @@ const UserStats = () => {
             <Line
               type="monotone"
               dataKey="Posts"
-              stroke="#CD5C5C"
+              stroke="#6366F1"
               strokeWidth={3}
               dot={{ fill: "#6366F1", strokeWidth: 2, r: 6 }}
               activeDot={{

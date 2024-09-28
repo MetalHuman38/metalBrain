@@ -459,7 +459,19 @@
     @apply w-full h-[300px];
   }
   .isActive {
-    @apply absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-600 border-white;
+    @apply absolute bottom-1 right-0 block h-3 w-3 rounded-full bg-green-600 border-white;
+  }
+
+  .react-icons-container {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 my-8 backdrop-blur-md overflow-hidden shadow-lg border rounded-xl p-5;
+  }
+
+  .react-icons-link {
+    @apply flex-center flex-col gap-2.5 p-5 bg-dark-3 rounded-lg hover:bg-gray-800 shadow-lg transition;
+  }
+
+  .react-icon-size {
+    @apply w-10 h-10;
   }
 }
 

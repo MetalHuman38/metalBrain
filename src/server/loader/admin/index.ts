@@ -1,3 +1,13 @@
+export interface CreateAdmin {
+  id?: number;
+  new_admin: string;
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+  created_at: Date;
+}
+
 export interface IAdmin {
   id: number;
   role: string;

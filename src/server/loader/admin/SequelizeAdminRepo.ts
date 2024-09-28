@@ -1,9 +1,30 @@
-import { IAdmin } from ".";
+import { CreateAdmin, IAdmin } from ".";
+import admins from "../sequelize/models/admin/admin.model.js";
+import AdminAttributes from "../sequelize/models/admin/admin.model.js";
+import UserAttributes from "../sequelize/models/usermodels/users.model.js";
 import users from "../sequelize/models/usermodels/users.model.js";
 import { UnauthorizedError } from "../utils/app-errors.js";
 import IAdminRepository from "./IAdminRepository.js";
 
 export class SequelizeAdminRepo implements IAdminRepository {
+  // ** This method is used to create a new admin ** //
+  async createAdmin(admin: CreateAdmin): Promise<admins> {
+    const newAdmin = await admins.create({
+      new_admin: admin.new_admin,
+      username: admin.username,
+      email: admin.email,
+      password: admin.password,
+      role: "admin",
+      created_at: new Date(),
+    });
+    return newAdmin.toJSON() as AdminAttributes;
+  }
+
+  // ** This method is used to update a user ** //
+  async upsertUser(user: UserAttributes): Promise<void> {
+    await users.upsert(user as UserAttributes);
+  }
+
   // ** This method is used to promote a user to a superadmin ** //
   async findbyRoleAndId(id: string, role: string): Promise<IAdmin[]> {
     const admin = await users.findAll({

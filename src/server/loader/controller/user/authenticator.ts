@@ -78,9 +78,6 @@ export class LoginUser {
         throw new InvalidCredentialsError();
       }
 
-      console.log("Token: ", token);
-      console.log("Refresh Token: ", refreshtoken);
-
       res.cookie("token", token, {
         httpOnly: jwtENV.JWT_COOKIE_HTTP_ONLY,
         sameSite: "strict",

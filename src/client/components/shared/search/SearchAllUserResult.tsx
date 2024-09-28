@@ -3,7 +3,7 @@ import { IUser } from "@/client/services/entities/user";
 import { useSearch } from "../../hooks/use-search";
 import GridUserList from "../card/GridUserList";
 
-const SearchAllUserResult = () => {
+export const SearchAllUserResult = () => {
   const { searchResults, isSearching } = useSearch<IUser>(
     "first_name",
     "username"

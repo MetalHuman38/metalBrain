@@ -2,7 +2,7 @@ import { useUserContext } from "../services/context/user/UseContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Loader from "../components/shared/Loader";
 
-const RequireAuthentication = () => {
+export const RequireAuthentication = () => {
   const { isUserAuthenticated, isUserLoading } = useUserContext();
   const location = useLocation();
 

@@ -1,18 +1,141 @@
 import IAdminRepository from "./IAdminRepository.js";
-import { IAdmin } from ".";
+import { CreateAdmin, IAdmin } from ".";
 import { Admin } from "./index.js";
 import {
   AdminNotFoundError,
   BadRequestError,
+  ErrorCreatingUser,
+  ErrorGeneratingToken,
   ErrorPromotingUserToSuperAdmin,
   ErrorVerifyingToken,
   ForbiddenError,
+  PasswordValidationError,
   SuperAdminOnlyError,
   UnauthorizedError,
 } from "../utils/app-errors.js";
 import IJwtHandler from "../../services/jwtHandler.js";
+import { IPasswordHasher } from "../../services/index.js";
+import { IUser } from "../userrepo/index.js";
+import { generateAvatarUrl } from "../utils/avatar.js";
 
 // ** AdminUseCase ** //
+
+// ** This method creates a new admin ** //
+export class CreateAdminUseCase {
+  constructor(
+    private adminRepo: IAdminRepository,
+    private passwordHasher: IPasswordHasher,
+    private jwtHandler: IJwtHandler
+  ) {}
+  async createAdmin(
+    admin: CreateAdmin
+  ): Promise<{ admin: CreateAdmin; token: string }> {
+    try {
+      // ** Check if creator is superadmin ** //
+      if (admin.role !== "superadmin") {
+        throw new UnauthorizedError();
+      }
+
+      // ** Check if email is valid ** //
+      if (!admin.email.includes("@")) {
+        throw new Error("Invalid email address");
+      }
+      // ** Validate Password ** //
+      this.passwordHasher.validatePassword(admin.password);
+
+      // ** Hash Password ** //
+      const hashedPassword = await this.passwordHasher.hashPassword(
+        admin.password
+      );
+      if (!hashedPassword) {
+        throw new PasswordValidationError(); // Customized error message
+      }
+
+      // ** Create Admin ** //
+      const newAdmin = await this.adminRepo.createAdmin({
+        ...admin,
+        password: hashedPassword,
+      });
+      if (!newAdmin) {
+        throw new BadRequestError();
+      }
+      // ** Generate Token ** //
+      const token = this.jwtHandler.jwtGenerator({
+        id: newAdmin.id as number,
+        role: "admin",
+      });
+      if (!token) {
+        throw new ErrorGeneratingToken();
+      }
+
+      // ** Update User Table ** //
+      await new UpdateUserUseCase(this.adminRepo).UpdateUser(
+        newAdmin,
+        hashedPassword
+      );
+      // ** Return new admin and token ** //
+      return { admin: newAdmin, token };
+    } catch (error: any) {
+      // Handle repository or validation errors
+      throw new BadRequestError();
+    }
+  }
+}
+
+// ** Update user table with extracted details from registerUserUseCase ** //
+export class UpdateUserUseCase {
+  constructor(private adminRepo: IAdminRepository) {}
+
+  async UpdateUser(
+    newAdmin: CreateAdmin,
+    hashedPassword: string
+  ): Promise<void> {
+    try {
+      const spaceIndex = newAdmin.new_admin.indexOf(" ");
+      const first_name =
+        spaceIndex != -1
+          ? newAdmin.new_admin.slice(0, spaceIndex)
+          : newAdmin.new_admin;
+      const last_name =
+        spaceIndex != -1 ? newAdmin.new_admin.slice(spaceIndex + 1) : "";
+      const avatarUrl = generateAvatarUrl(first_name, last_name);
+
+      const userRecord: IUser = {
+        first_name: first_name,
+        last_name: last_name,
+        username: newAdmin.username,
+        email: newAdmin.email,
+        password: hashedPassword,
+        reset_password_token: "",
+        reset_password_expires: new Date(),
+        status: "active",
+        bio: "The world is yours for the taking",
+        joined_date: new Date(),
+        last_login: new Date(),
+        last_logout: new Date(),
+        last_activity: new Date(),
+        role: "user",
+        avatarUrl: avatarUrl,
+        profile_picture: avatarUrl,
+        user_registration_id: newAdmin.id as number,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      await this.adminRepo.upsertUser(userRecord);
+    } catch (error) {
+      // ** Log and handle specific errors ** //
+      if (error instanceof ErrorCreatingUser) {
+        console.error("Error updating user:", error.message);
+        throw error; // ** Rethrow specific errors for upper layers to handle ** //
+      }
+      // ** Fallback for unexpected errors ** //
+      console.error("Unexpected error during user update:", error);
+      throw new Error("An unexpected error occurred during user update.");
+    }
+  }
+}
+
+// ** The AdminUseCase class is used to get admins by role ** //
 export class AdminUseCase {
   constructor(private adminRepo: IAdminRepository) {}
   // ** Get admins by role ** //
