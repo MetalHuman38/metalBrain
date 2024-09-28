@@ -15,13 +15,17 @@ const StatItem = ({ title, value, color, icon }: StatItemsProps) => {
         <div className="flex items-center text-sm font-medium text-gray-900">
           <div className="flex items-center">
             <span>
-              <img src={icon} alt={title} className="w-6 h-6" />
+              <img src={icon} alt={title} className="w-7 h-7" />
             </span>
           </div>
         </div>
       </div>
-      <h3 className="text-lg font-semibold text-gray-400">{title}</h3>
-      <p className={`mt-1 text-3xl font-semibold text-gray-100 ${color}`}>
+      <h3 className="text-lg text-center font-semibold text-gray-400">
+        {title}
+      </h3>
+      <p
+        className={`mt-1 text-3xl text-center font-semibold text-gray-100 ${color}`}
+      >
         {value}
       </p>
     </motion.div>
