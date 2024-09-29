@@ -156,6 +156,7 @@ export class UpdateUserUseCase {
         avatarUrl: avatarUrl,
         profile_picture: avatarUrl,
         user_registration_id: newUser.id as number,
+        admin_id: 0,
         created_at: new Date(),
         updated_at: new Date(),
       };

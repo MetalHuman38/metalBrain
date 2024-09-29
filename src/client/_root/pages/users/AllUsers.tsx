@@ -41,8 +41,6 @@ const AllUsers = () => {
     return fullName.includes(searchLower) || username.includes(searchLower);
   });
 
-  console.log("creators: ", creators);
-
   // Ensure users is an array
   if (
     !Array.isArray(creators) ||

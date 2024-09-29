@@ -28,11 +28,12 @@ export class CreateAdminUseCase {
     private jwtHandler: IJwtHandler
   ) {}
   async createAdmin(
-    admin: CreateAdmin
+    admin: CreateAdmin,
+    creator_role: string
   ): Promise<{ admin: CreateAdmin; token: string }> {
     try {
       // ** Check if creator is superadmin ** //
-      if (admin.role !== "superadmin") {
+      if (creator_role !== "superadmin") {
         throw new UnauthorizedError();
       }
 
@@ -76,7 +77,7 @@ export class CreateAdminUseCase {
       // ** Return new admin and token ** //
       return { admin: newAdmin, token };
     } catch (error: any) {
-      // Handle repository or validation errors
+      console.error("Error creating admin:", error.message);
       throw new BadRequestError();
     }
   }
@@ -109,15 +110,16 @@ export class UpdateUserUseCase {
         reset_password_token: "",
         reset_password_expires: new Date(),
         status: "active",
-        bio: "The world is yours for the taking",
+        bio: "Welcome to MetalBrain!",
         joined_date: new Date(),
         last_login: new Date(),
         last_logout: new Date(),
         last_activity: new Date(),
-        role: "user",
+        role: "admin",
         avatarUrl: avatarUrl,
         profile_picture: avatarUrl,
         user_registration_id: newAdmin.id as number,
+        admin_id: newAdmin.id as number,
         created_at: new Date(),
         updated_at: new Date(),
       };

@@ -20,7 +20,7 @@ const DashBoard = () => {
         <Header title={`Welcome back, @${user?.username}!`} />
       </div>
       {/* Full width & height background with constrained content */}
-      <main className="w-full h-screen">
+      <main className="w-full">
         <div className="max-w-screen-2xl h-full py-6 px-4 sm:px-6 lg:px-8 xl:px-16">
           <StatCard stats={stats} />
           <div className="items-center p-8">

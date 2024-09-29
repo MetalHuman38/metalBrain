@@ -27,6 +27,7 @@ export interface IUser {
   avatarUrl: string;
   profile_picture: string;
   user_registration_id: number;
+  admin_id: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -52,6 +53,7 @@ export class users implements IUser {
     public avatarUrl: string,
     public profile_picture: string,
     public user_registration_id: number,
+    public admin_id: number,
     public created_at: Date,
     public updated_at: Date,
     public posts?: [],
