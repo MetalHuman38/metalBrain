@@ -9,7 +9,7 @@ const AuthLayout = () => {
   useEffect(() => {
     // If user is authenticated and is superadmin, navigate to /admin
     if (isUserAuthenticated && user?.role === "superadmin") {
-      navigate("/dashboard", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     } else if (isUserAuthenticated) {
       navigate("/", { replace: true });
     }

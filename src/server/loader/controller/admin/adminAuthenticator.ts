@@ -23,20 +23,30 @@ export class AdminController {
 
   async createAdmin(req: Request, res: Response): Promise<void> {
     try {
-      const { new_admin, username, email, password, role } = req.body;
-      if (!new_admin || !username || !email || !password || !role) {
+      const { new_admin, username, email, password, creator_role } = req.body;
+      if (!new_admin || !username || !email || !password || !creator_role) {
         throw new BadRequestError();
       }
       this.logger.info("Request to create a new admin");
-      const admin = await this.createAdminUseCase.createAdmin({
-        new_admin: new_admin,
-        username: username,
-        email: email,
-        password: password,
-        role: role,
-        created_at: new Date(),
-      });
-      this.logger.info(`Admin created successfully: ${admin}`);
+      const admin = await this.createAdminUseCase.createAdmin(
+        {
+          new_admin: new_admin,
+          username: username,
+          email: email,
+          password: password,
+          role: "admin",
+          created_at: new Date(),
+        },
+        creator_role
+      );
+
+      if (!admin) {
+        this.logger.error("Bad Request! Admin not created");
+        res.status(400).json({ message: "Bad Request! Admin not created" });
+        return;
+      }
+
+      this.logger.info(`Admin created successfully: ${admin.admin}`);
       res.status(201).json({ message: "Admin created successfully", admin });
     } catch (error: any) {
       this.logger.error(

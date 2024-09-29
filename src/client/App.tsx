@@ -2,7 +2,7 @@ import "../globals.css";
 import { Route, Routes } from "react-router-dom";
 import { AuthLayout, RequireAuthentication, RequireSuperAdmin } from "./_auth";
 import { SignInForm, SignUpForm } from "./_auth/forms";
-import RootLayout from "./_root/RootLayout";
+import { AdminLayout, RootLayout } from "./_root";
 import { Home, NotFound, Unauthorized } from "./_root/pages";
 import { AllUsers, ExploreUsers, Profile } from "./_root/pages/users";
 import {
@@ -21,7 +21,6 @@ const App = () => {
         <Route element={<AuthLayout />}>
           <Route path="/sign-in" element={<SignInForm />} />
           <Route path="/sign-up" element={<SignUpForm />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
         </Route>
 
         {/**  Private Routes */}
@@ -31,17 +30,23 @@ const App = () => {
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/all-users" element={<AllUsers />} />
             <Route path="/explore" element={<ExploreUsers />} />
-            <Route path="/dashboard" element={<DashBoard />} />
+            {/* <Route path="/dashboard" element={<DashBoard />} /> */}
           </Route>
         </Route>
 
         {/** Super Admin Routes */}
         <Route element={<RequireSuperAdmin />}>
-          <Route path="/admin/create-user" element={<CreateUser />} />
-          <Route path="/admin/update-user" element={<UpgradeUser />} />
-          <Route path="/admin/manage-roles" element={<ManageRoles />} />
-          <Route path="/admin/delete-user" element={<AutoDeleteUser />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<DashBoard />} />
+            <Route path="create-user" element={<CreateUser />} />
+            <Route path="update-user" element={<UpgradeUser />} />
+            <Route path="manage-roles" element={<ManageRoles />} />
+            <Route path="delete-user" element={<AutoDeleteUser />} />
+          </Route>
         </Route>
+
+        {/* Unauthorized route */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* 404 route */}
         <Route path="*" element={<NotFound />} />

@@ -21,6 +21,7 @@ interface UserAttributes {
   avatarUrl: string;
   profile_picture: string;
   user_registration_id: number;
+  admin_id: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -59,6 +60,7 @@ class users
   declare avatarUrl: string;
   declare profile_picture: string;
   declare user_registration_id: number;
+  declare admin_id: number;
   declare created_at: Date;
   declare updated_at: Date;
 
@@ -176,6 +178,16 @@ users.init(
       allowNull: false,
       references: {
         model: "user_registrations",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    admin_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "admins",
         key: "id",
       },
       onUpdate: "CASCADE",

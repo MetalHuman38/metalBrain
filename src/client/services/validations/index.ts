@@ -19,3 +19,16 @@ export const SignInValidation = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters long" }),
 });
+
+// ** Create Admin ** //
+export const CreateAdminValidation = z.object({
+  new_admin: z.string(),
+  username: z.string(),
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
+  role: z.string(),
+  created_at: z.date(),
+  creator_role: z.string(),
+});
