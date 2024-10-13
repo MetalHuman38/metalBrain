@@ -92,7 +92,7 @@ export const bottombarLinks = [
   },
   {
     imgURL: "/assets/icons/profile.svg",
-    route: "/dashboard",
+    route: "/admin/dashboard",
     label: "MetalBrain",
     rel: "",
     target: "_self",

@@ -40,21 +40,33 @@ const adminController = new AdminController(createAdminUseCase, logger);
 // ** Create Admin ** //
 router.post(
   "/create",
-  (req, res, next) => roleAuthorizationMiddleware.handle(req, res, next),
+  (req, res, next) =>
+    roleAuthorizationMiddleware
+      .handle(req, res, next)
+      .then(() => next())
+      .catch(next),
   (req, res) => adminController.createAdmin(req, res)
 );
 
 // ** Role Authorization Middleware ** //
 router.get(
   "/protected",
-  (req, res, next) => roleAuthorizationMiddleware.handle(req, res, next),
+  (req, res, next) =>
+    roleAuthorizationMiddleware
+      .handle(req, res, next)
+      .then(() => next())
+      .catch(next),
   (req, res) => superAdminController.restrictedSuperAdminAction(req, res)
 );
 
 // ** Promote to superadmin. Method should update roles dynamically and manage admin permissions efficiently ** //
 router.put(
   "/promote",
-  (req, res, next) => roleAuthorizationMiddleware.handle(req, res, next),
+  (req, res, next) =>
+    roleAuthorizationMiddleware
+      .handle(req, res, next)
+      .then(() => next())
+      .catch(next),
   (req, res) => authorizations.promoteToSuperAdmin(req, res)
 );
 

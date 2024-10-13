@@ -9,7 +9,7 @@ export const sidebarLinks = [
   },
   {
     imgURL: "/assets/icons/people.svg",
-    route: "/create-user",
+    route: "/admin/create-user",
     label: "Create User",
     rel: "",
     target: "_self",
@@ -52,7 +52,7 @@ export const bottombarLinks = [
   },
   {
     imgURL: "/assets/icons/people.svg",
-    route: "/create-user",
+    route: "/admin/create-user",
     label: "Create User",
     rel: "",
     target: "_self",
@@ -60,7 +60,7 @@ export const bottombarLinks = [
   },
   {
     imgURL: "/assets/icons/notifications.svg",
-    route: "/notifications",
+    route: "/admin/notifications",
     label: "Notifications",
     rel: "",
     target: "_self",

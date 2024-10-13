@@ -1,6 +1,3 @@
-const { useActionData } = require("react-router-dom");
-const { parser } = require("typescript-eslint");
-
 module.exports = {
   semi: true,
   singQuote: true,

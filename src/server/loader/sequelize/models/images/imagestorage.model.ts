@@ -6,6 +6,7 @@ import posts from "../posts/posts.model.js";
 interface ImageStorageAttributes {
   id: number;
   imageUrl: string | null;
+  image_id: number | null;
   post_id: number | null;
   created_at: Date;
   creator_id: number;
@@ -15,9 +16,9 @@ interface ImageStorageAttributes {
 interface ImageStorageCreationAttributes
   extends Optional<ImageStorageAttributes, "id"> {
   imageUrl: string | null;
+  image_id: number | null;
   post_id: number | null;
   created_at: Date;
-  creator_id: number;
 }
 
 // ** Define Instance of Sequelize
@@ -30,6 +31,7 @@ class image_storages
 {
   declare id: number;
   declare imageUrl: string | null;
+  declare image_id: number | null;
   declare post_id: number | null;
   declare created_at: Date;
   declare creator_id: number;
@@ -41,7 +43,7 @@ class image_storages
 
   static async findImageByReferenceKey(
     key: string,
-    value: number,
+    value: number
   ): Promise<image_storages | null> {
     try {
       const image = await this.findOne({
@@ -52,7 +54,7 @@ class image_storages
     } catch (error) {
       console.error(
         `Error finding image by reference key: ${key}, value: ${value}`,
-        error,
+        error
       );
       throw error; // Re-throw the error after logging it
     }
@@ -66,10 +68,13 @@ image_storages.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      allowNull: false,
     },
     imageUrl: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    image_id: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     created_at: {
@@ -96,10 +101,10 @@ image_storages.init(
   },
   {
     sequelize,
-    modelName: "Image_storages",
+    modelName: "image_storages",
     timestamps: false,
     freezeTableName: true,
-  },
+  }
 );
 
 posts.hasMany(image_storages, {
@@ -116,7 +121,7 @@ image_storages.belongsTo(posts, {
 
 // ** sync the ImageStorage model with the database
 await sequelize
-  .sync({ force: false })
+  .sync({ alter: false })
   .then(() => {
     console.log("New Image synced successfully");
   })

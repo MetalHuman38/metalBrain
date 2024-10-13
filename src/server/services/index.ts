@@ -32,3 +32,6 @@ export interface EmailTemplate {
   html: string;
   placeholders?: { [key: string]: string };
 }
+
+export { default as fileValidator } from "./fileValidator";
+export { default as fileUploaderService } from "./fileUploaderService";
