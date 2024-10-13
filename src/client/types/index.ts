@@ -10,3 +10,12 @@ export type INavLink = {
 export interface HeaderProps {
   title: string;
 }
+
+export type FileUploaderProps = {
+  fieldChange: (FILES: File[]) => void;
+  mediaUrl: string;
+};
+
+export type FileWithPreview = File & {
+  preview: string;
+};

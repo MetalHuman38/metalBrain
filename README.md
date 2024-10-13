@@ -85,3 +85,5 @@ INSERT INTO user_activities (user_id, activity, activity_type, created_at, metad
 (2, 'liked a comment', 'like', CONCAT(CURDATE(), ' 11:15:00'), '{"post_id":101, "comment_id":202}'),
 (1, 'liked a comment', 'like', CONCAT(CURDATE(), ' 11:30:00'), '{"post_id":101, "comment_id":202}'),
 (2, 'liked a comment', 'like', CONCAT(CURDATE(), ' 11:45:00'), '{"post_id":101, "comment_id":202}');
+
+cp /home/babsdevsys/appV-1/src/server/services/multer.config.ts cp /home/babsdevsys/metalbrain/src/server/services

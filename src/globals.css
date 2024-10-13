@@ -422,7 +422,11 @@
 
   /* Left sidebar */
   .leftsidebar {
-    @apply hidden lg:block md:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-dark-2;
+    @apply hidden lg:block md:flex px-6 py-10 flex-col min-w-[270px] bg-dark-2;
+  }
+
+  .leftsidebarAdmin {
+    @apply hidden lg:block md:flex px-6 py-10 flex-col min-w-[270px] bg-dark-2;
   }
 
   .leftsidebar-link {

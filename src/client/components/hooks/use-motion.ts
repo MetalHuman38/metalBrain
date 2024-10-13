@@ -1,12 +1,29 @@
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion, useAnimationControls } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export const useMotion = () => {
   // Common animations you can reuse across components
   const [isOpen, setIsOpen] = useState(false);
 
+  const containerControls = useAnimationControls();
+  const svgControls = useAnimationControls();
+
+  useEffect(() => {
+    if (isOpen) {
+      containerControls.start("open");
+      svgControls.start("open");
+    } else {
+      containerControls.start("close");
+      svgControls.start("close");
+    }
+  }, [isOpen, containerControls]);
+
   // ** Toggle Leftsidebar state ** //
   const toggleLeftSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleOpenClose = () => {
     setIsOpen(!isOpen);
   };
 
@@ -67,6 +84,36 @@ export const useMotion = () => {
     },
   };
 
+  // ** ContainerVariants for the sidebar ** //
+  const containerVariants = {
+    close: {
+      width: "5rem",
+      transition: {
+        type: "spring",
+        damping: 200,
+        delay: 0.5,
+      },
+    },
+    open: {
+      width: "15rem",
+      transition: {
+        type: "spring",
+        damping: 200,
+        duration: 0.5,
+      },
+    },
+  };
+
+  // ** SVG variants ** //
+  const svgVariants = {
+    close: {
+      rotate: 360,
+    },
+    open: {
+      rotate: 180,
+    },
+  };
+
   return {
     motion,
     animations: {
@@ -82,6 +129,11 @@ export const useMotion = () => {
     toggleLeftSidebar,
     isOpen,
     setIsOpen,
+    containerVariants,
+    containerControls,
+    handleOpenClose,
+    svgVariants,
+    svgControls,
   };
 };
 

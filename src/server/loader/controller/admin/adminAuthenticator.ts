@@ -4,7 +4,7 @@ import {
   CreateAdminUseCase,
   RestrictedSuperAdminActionUseCase,
 } from "../../admin/AdminUseCase";
-import { IAdmin } from "../../admin";
+
 import {
   BadRequestError,
   SuperAdminOnlyError,
@@ -143,10 +143,7 @@ export class SuperAdminController {
     private logger: ILogger
   ) {}
 
-  async restrictedSuperAdminAction(
-    req: Request,
-    res: Response
-  ): Promise<IAdmin[]> {
+  async restrictedSuperAdminAction(req: Request, res: Response): Promise<void> {
     try {
       const { id, role } = req.body;
       this.logger.info(
@@ -176,7 +173,6 @@ export class SuperAdminController {
         }); // ** Handle unexpected errors ** //
       }
     }
-    return {} as IAdmin[];
   }
 }
 

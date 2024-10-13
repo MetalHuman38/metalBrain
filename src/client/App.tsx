@@ -4,7 +4,12 @@ import { AuthLayout, RequireAuthentication, RequireSuperAdmin } from "./_auth";
 import { SignInForm, SignUpForm } from "./_auth/forms";
 import { AdminLayout, RootLayout } from "./_root";
 import { Home, NotFound, Unauthorized } from "./_root/pages";
-import { AllUsers, ExploreUsers, Profile } from "./_root/pages/users";
+import {
+  AllUsers,
+  CreatePost,
+  ExploreUsers,
+  Profile,
+} from "./_root/pages/users";
 import {
   AutoDeleteUser,
   CreateUser,
@@ -30,6 +35,7 @@ const App = () => {
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/all-users" element={<AllUsers />} />
             <Route path="/explore" element={<ExploreUsers />} />
+            <Route path="/create-post" element={<CreatePost />} />
             {/* <Route path="/dashboard" element={<DashBoard />} /> */}
           </Route>
         </Route>

@@ -25,7 +25,7 @@ class saved_posts
 
   // Create custom class methods to create a new post
   static async createSave(
-    attributes: SavesCreationAttributes,
+    attributes: SavesCreationAttributes
   ): Promise<saved_posts> {
     return await this.create(attributes);
   }
@@ -33,7 +33,7 @@ class saved_posts
   // create custom method to check if post is saved
   static async checkIfSaved(
     user_id: number,
-    post_id: number,
+    post_id: number
   ): Promise<boolean> {
     const save = await this.findOne({ where: { user_id, post_id } });
     return !!save;
@@ -73,14 +73,14 @@ saved_posts.init(
     user_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: "User",
+        model: "users",
         key: "id",
       },
     },
     post_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: "Post",
+        model: "posts",
         key: "id",
       },
     },
@@ -101,7 +101,7 @@ saved_posts.init(
         fields: ["user_id", "post_id"],
       },
     ],
-  },
+  }
 );
 
 // Create a function to delete saved Post using the static method

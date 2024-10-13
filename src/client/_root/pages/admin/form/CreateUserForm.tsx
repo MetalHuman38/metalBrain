@@ -61,7 +61,7 @@ const CreateUserForm = ({ create, action }: CreateUserFormProps) => {
         if (action === "create") {
           form.reset();
         } else {
-          navigate("/admin/all-admins");
+          navigate("/admin/dashboard");
         }
       }
     } catch (error: any) {
@@ -75,14 +75,21 @@ const CreateUserForm = ({ create, action }: CreateUserFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-5 w-full max-w-5xl"
+        className="flex flex-col gap-5 shadow-md w-full max-w-lg max-auto"
       >
+        <div>
+          <h1 className="text-left text-2xl font-bold text-gray-200 shadow-md w-full max-w-lg max-auto mb-6">
+            {action === "create" ? "Create Admin" : "Update Admin"}
+          </h1>
+        </div>
         <FormField
           control={form.control}
           name="new_admin"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="new_admin">Full Name</FormLabel>
+              <FormLabel htmlFor="new_admin" className="text-light-3">
+                Full Name
+              </FormLabel>
               <FormControl>
                 <Input
                   type="text"

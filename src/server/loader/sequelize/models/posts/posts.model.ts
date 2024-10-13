@@ -9,8 +9,9 @@ interface PostAttributes {
   location: string | null;
   tags: string;
   likes_count: number | null;
-  created_at: Date | undefined;
   creator_id: number;
+  created_at: Date | undefined;
+  updated_at: Date | undefined;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, "id"> {
@@ -19,8 +20,9 @@ interface PostCreationAttributes extends Optional<PostAttributes, "id"> {
   location: string | null;
   tags: string;
   likes_count: number | null;
-  created_at: Date;
   creator_id: number;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // Define Instance of Sequelize
@@ -33,8 +35,9 @@ class posts extends Model<PostAttributes, PostCreationAttributes> {
   declare location: string | null;
   declare tags: string;
   declare likes_count: number | null;
+  declare creator_id: number;
   declare created_at: Date | undefined;
-  declare creator_at: number;
+  declare updated_at: Date | undefined;
 
   // create a static method to create a new post
   static async createPost(attributes: PostCreationAttributes): Promise<posts> {
@@ -43,7 +46,7 @@ class posts extends Model<PostAttributes, PostCreationAttributes> {
 
   static async updatePost(
     id: number,
-    attributes: PostAttributes,
+    attributes: PostAttributes
   ): Promise<[number, posts[]]> {
     const [affectedCount, updatedPosts] = await this.update(attributes, {
       where: { id },
@@ -68,7 +71,7 @@ class posts extends Model<PostAttributes, PostCreationAttributes> {
   // declare static methods to get infinite posts
   static async getInfinitePosts(
     offset: number,
-    limit: number,
+    limit: number
   ): Promise<posts[]> {
     return await this.findAll({ offset, limit });
   }
@@ -122,30 +125,34 @@ posts.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     creator_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "User",
+        model: "users",
         key: "id",
       },
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {
     sequelize,
-    modelName: "Post",
+    modelName: "posts",
     timestamps: false,
     freezeTableName: true,
-  },
+  }
 );
 
 // Create new post
 posts.createPost = async function (
-  attributes: PostCreationAttributes,
+  attributes: PostCreationAttributes
 ): Promise<posts> {
   try {
     const newPost = await this.create(attributes);
@@ -159,7 +166,7 @@ posts.createPost = async function (
 // Update post by ID
 posts.updatePost = async function (
   id: number,
-  attributes: PostAttributes,
+  attributes: PostAttributes
 ): Promise<[number, posts[]]> {
   try {
     const [affectedCount, updatedPosts] = await this.update(attributes, {
@@ -176,7 +183,7 @@ posts.updatePost = async function (
 // infinite posts
 posts.getInfinitePosts = async function (
   offset: number,
-  limit: number,
+  limit: number
 ): Promise<posts[]> {
   try {
     const posts = await this.findAll({ offset, limit });
