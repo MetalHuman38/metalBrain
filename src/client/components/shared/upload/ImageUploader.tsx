@@ -3,14 +3,12 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 import { useUploadImageHandler } from "../../hooks/use-uploadimage";
 import { Button } from "@/components/ui/button";
 import { FileUploaderProps, FileWithPreview } from "@/client/types";
-import { useUserContext } from "@/client/services/context/user/UseContext";
 
 const ImageUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [previewImage, setPreviewImage] = useState(mediaUrl);
   const [message, setMessage] = useState<string>("");
   const { handleImageUpload } = useUploadImageHandler();
-  const { user } = useUserContext();
 
   const selectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -44,12 +42,8 @@ const ImageUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
   const handleUpload = async (file: File) => {
     try {
       const formData = new FormData();
-      formData.append("images", file);
-      const uploadedImage = await handleImageUpload({
-        imageUrl: file.name,
-        creator_id: Number(user?.id),
-        created_at: new Date(),
-      });
+      formData.append("image", file);
+      const uploadedImage = await handleImageUpload(formData);
       console.log("Uploaded image", uploadedImage);
       setMessage("Image uploaded successfully!");
     } catch (error) {
@@ -73,7 +67,7 @@ const ImageUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col items-center justify-center w-full h-96 border-2 border-gray-300 border-dashed rounded-lg"
+      className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer"
     >
       <input
         {...getInputProps()}
@@ -87,11 +81,11 @@ const ImageUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
             selectFile(e);
           }
         }}
-        className="cursor-pointer hidden"
+        className="cursor-pointer"
       />
       {previewImage ? (
         <>
-          <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
+          <div className="flex flex-1 item-center justify-center w-full p-5 lg:p-10">
             <img
               src={previewImage}
               alt="image-preview"

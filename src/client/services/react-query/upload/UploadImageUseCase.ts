@@ -1,4 +1,3 @@
-import { IUploadImage } from "./interface";
 import { IUploadImagesRepository } from "./IUploadImageRepository";
 
 export class UploadImageUseCase {
@@ -7,8 +6,8 @@ export class UploadImageUseCase {
     this.uploadImagesRepository = uploadImagesRepository;
   }
 
-  public uploadImage = async (images: IUploadImage): Promise<any> => {
-    return this.uploadImagesRepository.uploadImages(images);
+  public uploadImage = async (formData: FormData): Promise<any> => {
+    return this.uploadImagesRepository.uploadImages(formData);
   };
 }
 

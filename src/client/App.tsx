@@ -9,6 +9,7 @@ import {
   CreatePost,
   ExploreUsers,
   Profile,
+  UpdatePost,
 } from "./_root/pages/users";
 import {
   AutoDeleteUser,
@@ -36,7 +37,7 @@ const App = () => {
             <Route path="/all-users" element={<AllUsers />} />
             <Route path="/explore" element={<ExploreUsers />} />
             <Route path="/create-post" element={<CreatePost />} />
-            {/* <Route path="/dashboard" element={<DashBoard />} /> */}
+            <Route path="/update-post/:id" element={<UpdatePost />} />
           </Route>
         </Route>
 
