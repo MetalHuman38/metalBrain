@@ -1,41 +1,22 @@
 import { IPostRepository } from "./IPostRepository";
-import { IJwtHandler } from "../../../services/jwtHandler.js";
-import { IPost } from "./interface";
-import IUserRepository from "../IUserRepository";
+import { IPost, IUpdatePost } from "./interface";
+import { VerifyUserUseCase } from "../userUseCases";
 
 // ** Post Use Case ** //
 export class PostUseCase {
   constructor(
     private postRepository: IPostRepository,
-    private userRepository: IUserRepository,
-    private jwtHandler: IJwtHandler
+    private verifyUserUseCase: VerifyUserUseCase // Use VerifyUserUseCase
   ) {}
 
   async createPost(post: IPost, token: string): Promise<any> {
     try {
-      const decodedToken = this.jwtHandler.jwtVerifier(token);
-      if (!decodedToken) {
-        throw new Error("Invalid token");
-      }
+      // ** Verify User ** //
+      const user = await this.verifyUserUseCase.VerifyUser(token);
 
-      console.log("decodedToken", decodedToken);
-
-      const user_id = decodedToken.id;
-      if (!user_id) {
-        throw new Error("Invalid user id");
-      }
-      console.log("user_id", user_id);
-      const user = await this.userRepository.findUsersById(user_id);
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      console.log("user", user);
-      // ** Retrieve image from image storage ** //
       if (user.id === undefined) {
         throw new Error("User ID is undefined");
       }
-
       const image = await this.postRepository.findImageByReferenceKey(
         "creator_id",
         user.id
@@ -45,12 +26,12 @@ export class PostUseCase {
       }
       const newPost = await this.postRepository.CreatePost({
         id: post.id,
-        imageUrl: image.imageUrl,
+        imageUrl: post.imageUrl || image.imageUrl,
         caption: post.caption,
         location: post.location,
         tags: post.tags,
         likes_count: post.likes_count,
-        creator_id: post.creator_id,
+        creator_id: user.id,
         created_at: post.created_at,
         updated_at: post.updated_at,
       });
@@ -61,6 +42,48 @@ export class PostUseCase {
       return newPost;
     } catch (error) {
       console.error("Error creating post in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Update Post ** //
+  async updatePost(post: IUpdatePost): Promise<any> {
+    try {
+      const updatedPost = await this.postRepository.UpdatePost(post);
+      if (!updatedPost) {
+        throw new Error("Error updating post in UpdatePost");
+      }
+      return updatedPost;
+    } catch (error) {
+      console.error("Error updating post in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Get Post By ID ** //
+  async getPostById(id: number): Promise<IPost | null> {
+    try {
+      const post = await this.postRepository.GetPostById(id);
+      if (!post) {
+        throw new Error("Post not found");
+      }
+      return post;
+    } catch (error) {
+      console.error("Error getting post by id in use case Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Get recent Post ** //
+  async getRecentPost(limit: number, offset: number): Promise<IPost[]> {
+    try {
+      const post = await this.postRepository.GetRecentPost(limit, offset);
+      if (!post) {
+        throw new Error("Post not found");
+      }
+      return post;
+    } catch (error) {
+      console.error("Error getting recent post in Catch block", error);
       throw error;
     }
   }

@@ -8,17 +8,21 @@ export const useCreatePostHandler = () => {
   const queryClient = useQueryClient();
   const { mutateAsync } = useCreatePost(); // Use mutateAsync for async handling
   const [post, setPost] = useState<IPost | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   // ** Handle post creation ** //
   const handlePostCreation = useCallback(
-    async (post: IPost): Promise<IPost | null> => {
+    async (post: IPost, token: string): Promise<IPost | null> => {
       try {
-        const data = await mutateAsync(post, {
-          onSuccess: (data) => {
-            setPost(data);
-            queryClient.invalidateQueries({ queryKey: ["posts"] });
-          },
-        });
+        const data = await mutateAsync(
+          { post, token },
+          {
+            onSuccess: (data) => {
+              setPost(data);
+              queryClient.invalidateQueries({ queryKey: ["posts"] });
+            },
+          }
+        );
         return data;
       } catch (error) {
         console.error("Error creating post", error);
@@ -28,5 +32,7 @@ export const useCreatePostHandler = () => {
     [mutateAsync, queryClient]
   );
 
-  return { post, setPost, handlePostCreation };
+  return { post, setPost, token, setToken, handlePostCreation };
 };
+
+export default useCreatePostHandler;

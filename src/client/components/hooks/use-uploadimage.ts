@@ -1,4 +1,3 @@
-import { IUploadImage } from "@/client/services/react-query/upload/interface";
 import { useUploadImage } from "@/client/services/react-query/upload/QueryAndMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -11,11 +10,11 @@ export const useUploadImageHandler = () => {
 
   // ** Handle single image upload ** //
   const handleImageUpload = useCallback(
-    async (image: IUploadImage): Promise<any> => {
+    async (formData: FormData): Promise<any> => {
       try {
-        const data = await mutateAsync(image, {
+        const data = await mutateAsync(formData, {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["images"] }); // Invalidate the images cache
+            queryClient.invalidateQueries({ queryKey: ["image"] }); // Invalidate the images cache
           },
         });
         return data; // Return the uploaded image data

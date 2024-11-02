@@ -1,4 +1,5 @@
 import { IUser } from "@/client/services/entities/user";
+import { IUpdatePost } from "@/client/services/entities/posts";
 
 export type UserGridListProps = {
   user: IUser[];
@@ -19,4 +20,8 @@ export interface StatItemsProps {
   value: string;
   icon: string;
   color: string;
+}
+
+export interface PostCardProps {
+  post: IUpdatePost;
 }

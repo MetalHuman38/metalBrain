@@ -26,4 +26,7 @@ router.post("/upload", upload.single("image"), (req, res) =>
   uploadController.uploadImages(req, res)
 );
 
+// ** Delete Image ** //
+router.delete("/delete", (req, res) => uploadController.deleteImage(req, res));
+
 export default router;

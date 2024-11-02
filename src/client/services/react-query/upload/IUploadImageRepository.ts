@@ -1,5 +1,4 @@
-import { IUploadImage } from "./interface";
-
+// Definition: Definition of the interface for uploading images.
 export interface IUploadImagesRepository {
-  uploadImages(image: IUploadImage): Promise<any>;
+  uploadImages(formData: FormData): Promise<any>;
 }

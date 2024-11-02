@@ -1,12 +1,12 @@
 import { AxiosConfig } from "../../../axios/AxiosConfig";
 import { IUploadImagesRepository } from "./IUploadImageRepository";
-import { IUploadImage } from "./interface";
 
 export class UploadImageAPI implements IUploadImagesRepository {
-  async uploadImages(image: IUploadImage): Promise<void> {
+  async uploadImages(formData: FormData): Promise<void> {
     try {
-      const response = await AxiosConfig.post("/upload", image, {
+      const response = await AxiosConfig.post("/upload", formData, {
         headers: {
+          "Custom-Header": "image",
           "Content-Type": "multipart/form-data",
         },
         withCredentials: true,

@@ -17,14 +17,18 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useToast } from "@/components/hooks/use-toast";
 import { useCreatePostHandler } from "@/client/components/hooks/use-createpost";
+
 import { PostFormProps } from "./formProps";
 import ImageUploader from "@/client/components/shared/upload/ImageUploader";
+import useUpdatePostHandler from "@/client/components/hooks/use-updatepost";
+import { IUser } from "@/client/services/entities/user";
 
 const PostForm = ({ post, action }: PostFormProps) => {
   const { user } = useUserContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { handlePostCreation } = useCreatePostHandler();
+  const { handlePostCreation, token } = useCreatePostHandler();
+  const { handleUpdatePost } = useUpdatePostHandler();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof CreatePostValidation>>({
@@ -40,17 +44,41 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const onSubmit = async (data: z.infer<typeof CreatePostValidation>) => {
     setLoading(true);
     try {
-      const newPost = await handlePostCreation({
-        id: post?.id,
-        caption: data.caption,
-        imageUrl: post?.imageUrl || null,
-        location: data.location,
-        tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags,
-        likes_count: 0,
-        creator_id: Number(user?.id),
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+      if (post && "action === 'update'") {
+        handleUpdatePost({
+          id: post.id,
+          caption: data.caption,
+          imageUrl: post.imageUrl,
+          location: data.location,
+          tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags,
+          likes_count: post.likes_count,
+          creator_id: post.creator_id,
+          created_at: post.created_at,
+          updated_at: new Date(),
+          user: user as IUser,
+        });
+        toast({
+          title: "Post updated successfully",
+        });
+        navigate("/");
+        return;
+      }
+
+      const newPost = await handlePostCreation(
+        {
+          id: post?.id,
+          caption: data.caption,
+          imageUrl: post?.imageUrl || null,
+          location: data.location,
+          tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags,
+          likes_count: 0,
+          creator_id: Number(user?.id),
+          created_at: new Date(),
+          updated_at: new Date(),
+          user: user as IUser,
+        },
+        token as string
+      );
       if (!newPost) {
         throw new Error("Post not created");
       }

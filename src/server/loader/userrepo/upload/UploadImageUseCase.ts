@@ -13,4 +13,14 @@ export class UploadImageUseCase {
       throw error;
     }
   }
+
+  // ** Delete Image ** //
+  async deleteImage(images: IUploadImage): Promise<void> {
+    try {
+      await this.uploadImagesRepository.deleteImage(images);
+    } catch (error) {
+      console.error("Error deleting image", error);
+      throw error;
+    }
+  }
 }
