@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PostCardProps } from "./interface";
 import { useUserContext } from "@/client/services/context/user/UseContext";
+import PostStats from "./PostStats";
 
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
@@ -77,6 +78,7 @@ const PostCard = ({ post }: PostCardProps) => {
           className="post-card_img"
         />
       </Link>
+      <PostStats post={post} id={user?.id} />
     </div>
   );
 };

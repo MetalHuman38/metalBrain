@@ -1,5 +1,12 @@
 import { AxiosConfig } from "../../../axios/AxiosConfig";
-import { IPost, IUpdatePost } from "./interface";
+import {
+  ILikedPost,
+  IPost,
+  ISavedPost,
+  IUnLikedPost,
+  IUnSavedPost,
+  IUpdatePost,
+} from "./interface";
 import { IPostRepository } from "./IPostRepository";
 
 export class PostAPI implements IPostRepository {
@@ -66,6 +73,81 @@ export class PostAPI implements IPostRepository {
       return response.data.post;
     } catch (error) {
       throw new Error("Unable to get recent post");
+    }
+  }
+
+  async SavePost(post: ISavedPost): Promise<ISavedPost> {
+    try {
+      const response = await AxiosConfig.post("/save-post", post, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to save post");
+    }
+  }
+
+  async UnSavePost(post: IUnSavedPost): Promise<null> {
+    try {
+      const response = await AxiosConfig.delete("/unsave-post", {
+        data: post,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to unsave post");
+    }
+  }
+
+  async GetAllSavedPosts(post: ISavedPost[]): Promise<ISavedPost[]> {
+    try {
+      const response = await AxiosConfig.get("/get-saved-post", {
+        params: {
+          post,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to get saved post");
+    }
+  }
+
+  async LikePost(post: ILikedPost): Promise<ILikedPost> {
+    try {
+      const response = await AxiosConfig.post("/like-post", post, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to like post");
+    }
+  }
+
+  async UnLikePost(post: IUnLikedPost): Promise<null> {
+    try {
+      const response = await AxiosConfig.delete("/unlike-post", {
+        data: post,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Unable to unlike post");
     }
   }
 }

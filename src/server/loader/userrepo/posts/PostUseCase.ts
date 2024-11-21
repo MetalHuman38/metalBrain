@@ -1,5 +1,12 @@
 import { IPostRepository } from "./IPostRepository";
-import { IPost, IUpdatePost } from "./interface";
+import {
+  ILikedPost,
+  IPost,
+  ISavedPost,
+  IUnLikedPost,
+  IUnSavedPost,
+  IUpdatePost,
+} from "./interface";
 import { VerifyUserUseCase } from "../userUseCases";
 
 // ** Post Use Case ** //
@@ -7,7 +14,7 @@ export class PostUseCase {
   constructor(
     private postRepository: IPostRepository,
     private verifyUserUseCase: VerifyUserUseCase // Use VerifyUserUseCase
-  ) {}
+  ) { }
 
   async createPost(post: IPost, token: string): Promise<any> {
     try {
@@ -31,6 +38,7 @@ export class PostUseCase {
         location: post.location,
         tags: post.tags,
         likes_count: post.likes_count,
+        comment_count: post.comment_count,
         creator_id: user.id,
         created_at: post.created_at,
         updated_at: post.updated_at,
@@ -84,6 +92,70 @@ export class PostUseCase {
       return post;
     } catch (error) {
       console.error("Error getting recent post in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Save Post ** //
+  async savePost(post: ISavedPost): Promise<ISavedPost> {
+    try {
+      const newPost = await this.postRepository.SavePost(post);
+      if (!newPost) {
+        throw new Error("Error saving post in SavePost");
+      }
+      return newPost;
+    } catch (error) {
+      console.error("Error saving post in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** UnSave Post ** //
+  async unSavePost(post: IUnSavedPost): Promise<null> {
+    try {
+      await this.postRepository.UnSavePost(post);
+      return null;
+    } catch (error) {
+      console.error("Error unsaving post in Catch block use case", error);
+      throw error;
+    }
+  }
+
+  // ** Get All Saved Posts ** //
+  async getAllSavedPosts(post: ISavedPost): Promise<ISavedPost[]> {
+    try {
+      const savedPosts = await this.postRepository.GetAllSavedPosts(post);
+      if (!savedPosts) {
+        throw new Error("Error getting saved posts in GetAllSavedPosts");
+      }
+      return savedPosts;
+    } catch (error) {
+      console.error("Error getting saved posts in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Like Post ** //
+  async likePost(post: ILikedPost): Promise<ILikedPost> {
+    try {
+      const newPost = await this.postRepository.LikePost(post);
+      if (!newPost) {
+        throw new Error("Error liking post in LikePost");
+      }
+      return newPost;
+    } catch (error) {
+      console.error("Error liking post in Catch block", error);
+      throw error;
+    }
+  }
+
+  // ** Unlike Post ** //
+  async unLikePost(post: IUnLikedPost): Promise<null> {
+    try {
+      await this.postRepository.UnLikePost(post);
+      return null;
+    } catch (error) {
+      console.error("Error unliking post in Catch block", error);
       throw error;
     }
   }

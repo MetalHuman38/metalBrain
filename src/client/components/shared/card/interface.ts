@@ -25,3 +25,8 @@ export interface StatItemsProps {
 export interface PostCardProps {
   post: IUpdatePost;
 }
+
+export interface PostStatsProps {
+  post: IUpdatePost;
+  id?: string;
+}
