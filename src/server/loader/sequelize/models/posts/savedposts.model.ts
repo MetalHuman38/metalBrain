@@ -7,7 +7,7 @@ interface SavesAttributes {
   id: number;
   user_id: number;
   post_id: number;
-  saveDate: Date | undefined;
+  saved_date: Date | undefined;
 }
 
 interface SavesCreationAttributes extends Optional<SavesAttributes, "id"> {}
@@ -21,7 +21,7 @@ class saved_posts
   declare id: number;
   declare user_id: number;
   declare post_id: number;
-  declare saveDate: Date | undefined;
+  declare saved_date: Date | undefined;
 
   // Create custom class methods to create a new post
   static async createSave(
@@ -84,7 +84,7 @@ saved_posts.init(
         key: "id",
       },
     },
-    saveDate: {
+    saved_date: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: DataTypes.NOW,

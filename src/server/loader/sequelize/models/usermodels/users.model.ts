@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelizeConInstance } from "../../sequelizeCon.js";
 import follows from "./follow.model.js";
+import comments from "../comments/comments.model.js";
 
 interface UserAttributes {
   id: number;
@@ -222,6 +223,8 @@ users.belongsToMany(users, {
   as: "Following",
   foreignKey: "following_id",
 });
+
+users.hasMany(comments, { foreignKey: "user_id", as: "userComments" });
 
 await sequelize
   .sync({ alter: false })

@@ -477,6 +477,14 @@
   .react-icon-size {
     @apply w-10 h-10;
   }
+
+  .comment-thread {
+    @apply flex flex-col gap-4 p-5 bg-dark-3 rounded-lg shadow-lg;
+  }
+
+  .comment-reply {
+    @apply flex flex-col gap-4 p-5 bg-dark-3 rounded-lg shadow-lg;
+  }
 }
 
 @layer components {

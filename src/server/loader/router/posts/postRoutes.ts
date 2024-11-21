@@ -37,4 +37,25 @@ router.get("/get-recent-post", (req, res) =>
   postsController.getRecentPost(req, res)
 );
 
+// ** Define route to save a post ** //
+router.post("/save-post", (req, res) => postsController.savePost(req, res));
+
+// ** Define route to unsave a post ** //
+router.delete("/unsave-post", (req, res) =>
+  postsController.unSavePost(req, res)
+);
+
+// ** Define route to get saved posts ** //
+router.get("/get-saved-posts", (req, res) =>
+  postsController.getAllSavedPosts(req, res)
+);
+
+// ** Define route to like a post ** //
+router.post("/like-post", (req, res) => postsController.likePost(req, res));
+
+// ** Define route to unlike a post ** //
+router.delete("/unlike-post", (req, res) =>
+  postsController.unLikePost(req, res)
+);
+
 export default router;

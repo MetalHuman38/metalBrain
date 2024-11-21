@@ -72,10 +72,13 @@ const PostForm = ({ post, action }: PostFormProps) => {
           location: data.location,
           tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags,
           likes_count: 0,
+          comment_count: 0,
           creator_id: Number(user?.id),
           created_at: new Date(),
           updated_at: new Date(),
           user: user as IUser,
+          isLiked: false,
+          isSaved: false,
         },
         token as string
       );

@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelizeConInstance } from "../../sequelizeCon.js";
 import users from "../usermodels/users.model.js";
+import comments from "../comments/comments.model.js";
 
 interface PostAttributes {
   id: number;
@@ -9,6 +10,7 @@ interface PostAttributes {
   location: string | null;
   tags: string;
   likes_count: number | null;
+  comment_count: number | null;
   creator_id: number;
   created_at: Date | undefined;
   updated_at: Date | undefined;
@@ -20,6 +22,7 @@ interface PostCreationAttributes extends Optional<PostAttributes, "id"> {
   location: string | null;
   tags: string;
   likes_count: number | null;
+  comment_count: number | null;
   creator_id: number;
   created_at: Date;
   updated_at: Date;
@@ -125,6 +128,11 @@ posts.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    comment_count: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
     creator_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -215,6 +223,8 @@ posts.getUserPosts = async function (user_id: number): Promise<posts[]> {
     throw error;
   }
 };
+
+posts.hasMany(comments, { foreignKey: "post_id", as: "comments" });
 
 // Define the relationship between the User and Post models
 users.hasMany(posts, {
