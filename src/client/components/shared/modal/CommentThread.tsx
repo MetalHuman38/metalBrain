@@ -14,16 +14,16 @@ export const CommentThread: React.FC<CommentThreadProps> = ({ post_id }) => {
     offset,
     handleGetComment,
     handleGetCommentReplies,
-  } = useGetCommentHandler();
+  } = useGetCommentHandler(post_id, 0, 10, 0);
   const [commentWithReplies, setCommentWithReplies] = useState<IComment[]>([]);
 
   useEffect(() => {
-    handleGetComment(post_id, limit, offset);
+    handleGetComment(post_id);
   }, [post_id, limit, offset]);
 
   // ** Function to load replies for a given comment recursively ** //
   const loadReplies = async (comment: IComment): Promise<IComment[]> => {
-    handleGetCommentReplies(comment.id, limit, offset);
+    handleGetCommentReplies(comment.id);
     if (commentReplies && commentReplies.length > 0) {
       const repliesWithNestedReplies = await Promise.all(
         commentReplies.map(async (reply) => {

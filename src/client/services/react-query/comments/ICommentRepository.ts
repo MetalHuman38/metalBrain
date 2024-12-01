@@ -11,8 +11,8 @@ export interface ICommentRepository {
     offset: number
   ): Promise<IComment[]>;
   deleteComment(id: number): Promise<void>;
-  likeComment(id: number, user_id: number): Promise<IComment>;
-  unlikeComment(id: number, user_id: number): Promise<IComment>;
+  likeComment(comment_id: number, user_id: number): Promise<IComment>;
+  unlikeComment(comment_id: number, user_id: number): Promise<IComment>;
   getCommentLikes(id: number): Promise<number[]>;
   getCommentReplies(
     parent_comment_id: number,

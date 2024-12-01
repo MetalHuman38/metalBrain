@@ -10,6 +10,11 @@ export interface IComment {
   content: string;
   created_at: Date;
   updated_at: Date;
+  user?: {
+    username: string;
+    avatarUrl: string;
+
+  };
 }
 
 export interface ICreateComment {

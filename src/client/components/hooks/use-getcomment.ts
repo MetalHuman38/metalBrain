@@ -1,16 +1,13 @@
 // ** This file contains the useGetComment and comment replies hooks ** //
-import { useCallback, useState } from "react";
-import { useGetRecentComments } from "@/client/services/react-query/comments/CommentQueryMutation";
-import { useGetCommentReplies } from "@/client/services/react-query/comments/CommentQueryMutation";
-import { useGetCommentById } from "@/client/services/react-query/comments/CommentQueryMutation";
+import { useCallback } from "react";
+import {
+  useGetRecentComments,
+  useGetCommentReplies,
+  useGetCommentById
+} from "@/client/services/react-query/comments/CommentQueryMutation";
 
 // ** Set up get comment hook ** //
-export const useGetCommentHandler = () => {
-  const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
-  const [post_id, setPostId] = useState<number>(0);
-  const [parent_comment_id, setParentCommentId] = useState<number>(0);
-  const [comment_id, setCommentId] = useState<number>(0);
+export const useGetCommentHandler = (post_id: number, parent_comment_id: number, limit: number, offset: number) => {
 
   // Fetch the recent comment based on comment_id
   const {
@@ -19,31 +16,33 @@ export const useGetCommentHandler = () => {
     isError,
   } = useGetRecentComments(post_id, limit, offset);
 
+  console.log("Recent comment", recentComment);
+
   const {
     data: commentReplies,
     isLoading: isReplyLoading,
     isError: isReplyError,
   } = useGetCommentReplies(parent_comment_id, limit, offset);
 
+  console.log("Comment replies", commentReplies);
+
   const { data: commentById } = useGetCommentById(parent_comment_id);
 
+  console.log("Comment by id", commentById);
+
   // ** Handle fetching a comment ** //
-  const handleGetComment = useCallback((post_id: number, limit: number, offset: number) => {
-    setLimit(limit);
-    setOffset(offset);
-    setPostId(post_id);
+  const handleGetComment = useCallback((newPost_id: number) => {
+    console.log("New post id", newPost_id);
   }, []);
 
   // ** Get comment replies ** //
-  const handleGetCommentReplies = useCallback((parent_comment_id: number, limit: number, offset: number) => {
-    setLimit(limit);
-    setOffset(offset);
-    setParentCommentId(parent_comment_id);
+  const handleGetCommentReplies = useCallback((newParentComment_id: number) => {
+    console.log("New parent comment id", newParentComment_id);
   }, []);
 
   // ** Get comment by id ** //
-  const handleGetCommentById = useCallback((comment_id: number) => {
-    setCommentId(comment_id);
+  const handleGetCommentById = useCallback((newComment_id: number) => {
+    console.log("New comment id", newComment_id);
   }, []);
 
   return {
@@ -56,7 +55,6 @@ export const useGetCommentHandler = () => {
     limit,
     offset,
     commentById,
-    comment_id,
     handleGetComment,
     handleGetCommentReplies,
     handleGetCommentById,

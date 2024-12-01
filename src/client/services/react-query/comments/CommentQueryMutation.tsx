@@ -101,8 +101,14 @@ export const useLikeComment = () => {
   const likeCommentAPI = new CommentAPI();
   const commentUseCase = new CommentUseCase(likeCommentAPI);
   return useMutation({
-    mutationFn: ({ id, user_id }: { id: number; user_id: number }) => {
-      return commentUseCase.likeComment(id, user_id);
+    mutationFn: ({
+      comment_id,
+      user_id,
+    }: {
+      comment_id: number;
+      user_id: number;
+    }) => {
+      return commentUseCase.likeComment(comment_id, user_id);
     },
   });
 };
@@ -112,8 +118,14 @@ export const useUnlikeComment = () => {
   const unlikeCommentAPI = new CommentAPI();
   const commentUseCase = new CommentUseCase(unlikeCommentAPI);
   return useMutation({
-    mutationFn: ({ id, user_id }: { id: number; user_id: number }) => {
-      return commentUseCase.unlikeComment(id, user_id);
+    mutationFn: ({
+      comment_id,
+      user_id,
+    }: {
+      comment_id: number;
+      user_id: number;
+    }) => {
+      return commentUseCase.unlikeComment(comment_id, user_id);
     },
   });
 };

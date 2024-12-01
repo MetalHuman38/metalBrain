@@ -108,10 +108,10 @@ export class CommentAPI implements ICommentRepository {
     }
   }
 
-  async likeComment(id: number, user_id: number): Promise<IComment> {
+  async likeComment(comment_id: number, user_id: number): Promise<IComment> {
     try {
       const response = await AxiosConfig.post(
-        `/like-comment/${id}`,
+        `/like-comment/${comment_id}`,
         {
           user_id,
         },
@@ -127,14 +127,12 @@ export class CommentAPI implements ICommentRepository {
     }
   }
 
-  async unlikeComment(id: number, user_id: number): Promise<IComment> {
+  async unlikeComment(comment_id: number, user_id: number): Promise<IComment> {
     try {
-      const response = await AxiosConfig.post(
-        `/unlike-comment/${id}`,
+      const response = await AxiosConfig.delete(
+        `/unlike-comment/${comment_id}`,
         {
-          user_id,
-        },
-        {
+          data: { user_id },
           headers: {
             "Content-Type": "application/json",
           },
@@ -153,6 +151,7 @@ export class CommentAPI implements ICommentRepository {
           "Content-Type": "application/json",
         },
       });
+      console.log("Comment likes from API", response.data.likes);
       return response.data.likes as number[];
     } catch (error) {
       throw error;

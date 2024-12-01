@@ -48,12 +48,12 @@ router.delete("/delete-comment/:id/comment", (req, res) =>
 );
 
 // ** Define route for like comment ** //
-router.post("/like-comment", (req, res) =>
+router.post("/like-comment/:comment_id", (req, res) =>
   commentsController.likeComment(req, res)
 );
 
 // ** Define route for unlike comment ** //
-router.delete("/unlike-comment", (req, res) =>
+router.delete("/unlike-comment/:comment_id", (req, res) =>
   commentsController.unLikeComment(req, res)
 );
 

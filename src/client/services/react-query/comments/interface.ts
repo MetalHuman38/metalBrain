@@ -4,6 +4,7 @@ export interface IComment {
   id: number;
   user_id: number;
   post_id: number;
+  comment_id: number;
   parent_comment_id: number;
   like_count: number;
   status: string;
@@ -12,7 +13,12 @@ export interface IComment {
   content: string;
   created_at: Date;
   updated_at: Date;
+  user?: {
+    username: string;
+    avatarUrl: string;
+  };
   replies?: IComment[];
+  isLiked: boolean;
 }
 
 export interface ICreateComment {
