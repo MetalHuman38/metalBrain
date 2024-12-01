@@ -8,6 +8,8 @@ import { CommentModalProps } from "./interface";
 import { useGetCommentHandler } from "../../hooks/use-getcomment";
 import { timeAgo } from "@/lib/utils";
 import { RecursiveRender } from "./RecursiveRender";
+import Loader from "../Loader";
+import { useUserContext } from "@/client/services/context/user/UseContext";
 
 // ** Comment Modal Component ** //
 const CommentModal: React.FC<CommentModalProps> = ({
@@ -16,21 +18,22 @@ const CommentModal: React.FC<CommentModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { handleCommentCreation } = useCreateCommentHandler();
+  const { handleCommentCreation, handleCommentLike, handleCommentUnlike } =
+    useCreateCommentHandler();
   const [commentText, setCommentText] = useState<string>("");
-  const {
-    recentComment,
-    commentReplies,
-    limit,
-    offset,
-    handleGetCommentReplies,
-  } = useGetCommentHandler();
+  const [limit, _setLimit] = useState<number>(10);
+  const [offset, _setOffset] = useState<number>(0);
+  const { recentComment, commentReplies, handleGetCommentReplies } =
+    useGetCommentHandler(post_id, user_id, limit, offset);
   const [commentWithReplies, setCommentWithReplies] = useState<IComment[]>([]);
+  const [isLiked, _setIsLiked] = useState(false);
+  const [isLikingComment, _setIsLikingComment] = useState(false);
+  const { user } = useUserContext();
 
   const handleCreateComment = async () => {
     const newComment: ICreateComment = {
       post_id: post_id,
-      user_id: user_id,
+      user_id: Number(user?.id) || user_id,
       content: commentText,
     };
     await handleCommentCreation(newComment);
@@ -41,7 +44,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
 
   // ** Function to load replies for a given comment recursively ** //
   const loadReplies = async (comment: IComment): Promise<IComment[]> => {
-    handleGetCommentReplies(comment.id, limit, offset);
+    handleGetCommentReplies(comment.id);
     if (commentReplies && commentReplies.length > 0) {
       const repliesWithNestedReplies = await Promise.all(
         commentReplies.map(async (reply) => {
@@ -71,16 +74,53 @@ const CommentModal: React.FC<CommentModalProps> = ({
     return comments.map((comment) => (
       <div
         key={comment.id}
-        className="border border-gray-200 p-4 rounded-lg my-4"
+        className="shadow-md border border-gray-300 p-4 rounded-lg my-4"
       >
-        <div className="comment-reply text-lg font-semibold">
-          {comment.content}
+        {/* ** user info ** */}
+        <div className="flex items-center gap-2">
+          <img
+            className="w-8 h-8 rounded-full"
+            src={
+              comment?.user?.avatarUrl
+                ? `${comment?.user?.avatarUrl}`
+                : "/assets/icons/profile-placeholder.svg"
+            }
+            alt="user"
+          />
+          <div className="font-semibold text-sm text-blue-600">
+            {comment?.user?.username || "Anonymous"} {/* Access username */}
+          </div>
+          <div className="font-semibold text-sm text-gray-600">
+            {comment.created_at && timeAgo(comment?.created_at.toString())}
+          </div>
         </div>
-        <div>
-          {comment.created_at && timeAgo(comment?.created_at.toString())}
+        <div className="flex items-center">
+          <div className="comment-reply text-sm font-semibold">
+            {comment.content}
+          </div>
+          <div className="flex gap-2">
+            {isLikingComment ? (
+              <Loader />
+            ) : (
+              <img
+                src={
+                  isLiked ? "/assets/icons/liked.svg" : "/assets/icons/like.svg"
+                }
+                alt="like"
+                className="ml-4 cursor-pointer"
+                loading="lazy"
+                width={16}
+                height={16}
+                onClick={() => {
+                  comment.isLiked
+                    ? handleCommentUnlike(comment.id, Number(user?.id))
+                    : handleCommentLike(comment.id, Number(user?.id));
+                }}
+              />
+            )}
+            <p className="small-medium lg:base-medium">{comment.like_count}</p>
+          </div>
         </div>
-        <div>{comment.user_id}</div>
-        <div>{comment.post_id}</div>
         {comment.replies && renderComments(comment.replies)}
       </div>
     ));

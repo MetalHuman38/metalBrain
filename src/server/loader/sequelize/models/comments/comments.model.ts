@@ -34,8 +34,7 @@ const sequelize = sequelizeConInstance();
 
 class comments
   extends Model<CommentAttributes, CommentCreationAttributes>
-  implements CommentAttributes
-{
+  implements CommentAttributes {
   declare id: number;
   declare user_id: number;
   declare post_id: number;

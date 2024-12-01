@@ -483,7 +483,7 @@
   }
 
   .comment-reply {
-    @apply flex flex-col gap-4 p-5 bg-dark-3 rounded-lg shadow-lg;
+    @apply flex flex-col p-2 bg-dark-3 rounded-lg shadow-lg;
   }
 }
 

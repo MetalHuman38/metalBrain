@@ -103,10 +103,10 @@ export const useCreateCommentHandler = () => {
 
   // ** Handle comment like ** //
   const handleCommentLike = useCallback(
-    async (id: number, user_id: number): Promise<IComment | null> => {
+    async (comment_id: number, user_id: number): Promise<IComment | null> => {
       try {
         const data = await likeCommentAsync(
-          { id, user_id },
+          { comment_id, user_id },
           {
             onSuccess: (data) => {
               setComment(data);
@@ -125,10 +125,10 @@ export const useCreateCommentHandler = () => {
 
   // ** Handle comment unlike ** //
   const handleCommentUnlike = useCallback(
-    async (id: number, user_id: number): Promise<IComment | null> => {
+    async (comment_id: number, user_id: number): Promise<IComment | null> => {
       try {
         const data = await unlikeCommentAsync(
-          { id, user_id },
+          { comment_id, user_id },
           {
             onSuccess: (data) => {
               setComment(data);

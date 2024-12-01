@@ -85,14 +85,13 @@ export class CommentsController {
     console.log("req.params:", req.params);
     try {
       const id = parseInt(req.params.id as string, 10);
-      console.log("id from req.params", id);
       if (isNaN(id)) {
         res.status(400).json({ error: "Bad Request" });
         return;
       }
       const comment = await this.commentUseCase.getCommentById(id);
       if (!comment) {
-        res.status(400).json({ error: "Error getting comment by ID" });
+        res.status(404).json({ error: "Error getting comment by ID" });
         return;
       }
       res
@@ -104,7 +103,7 @@ export class CommentsController {
         error.message,
         error.stack
       );
-      res.status(400).json({
+      res.status(500).json({
         error: "Error getting comment by ID in controller catch block",
       });
     }
@@ -244,14 +243,14 @@ export class CommentsController {
   // ** Like Comment ** //
   async likeComment(req: Request, res: Response): Promise<void> {
     try {
-      const id = parseInt(req.body.id, 10);
+      const comment_id = parseInt(req.params.comment_id, 10);
       const user_id = parseInt(req.body.user_id, 10);
-      if (!id || !user_id) {
+      if (!comment_id || !user_id) {
         res.status(400).json({ error: "Bad Request" });
         return;
       }
-      console.log("id, user_id", id, user_id);
-      const likedComment = await this.commentUseCase.likeComment(id, user_id);
+      console.log("id, user_id", comment_id, user_id);
+      const likedComment = await this.commentUseCase.likeComment(comment_id, user_id);
       if (!likedComment) {
         res.status(400).json({ error: "Error liking comment in controller" });
         return;
@@ -272,14 +271,15 @@ export class CommentsController {
   // ** Unlike Comment ** //
   async unLikeComment(req: Request, res: Response): Promise<void> {
     try {
-      const id = parseInt(req.body.id, 10);
+      const comment_id = parseInt(req.params.comment_id, 10);
       const user_id = parseInt(req.body.user_id, 10);
-      if (!id || !user_id) {
+      if (!comment_id || !user_id) {
         res.status(400).json({ error: "Bad Request" });
         return;
       }
+      console.log('comment_id, user_id', comment_id, user_id);
       const unlikedComment = await this.commentUseCase.unlikeComment(
-        id,
+        comment_id,
         user_id
       );
       if (!unlikedComment) {

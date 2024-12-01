@@ -39,8 +39,7 @@ const sequelize = sequelizeConInstance();
 
 class users
   extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+  implements UserAttributes {
   declare id: number;
   declare first_name: string;
   declare last_name: string;
@@ -225,6 +224,7 @@ users.belongsToMany(users, {
 });
 
 users.hasMany(comments, { foreignKey: "user_id", as: "userComments" });
+comments.belongsTo(users, { foreignKey: "user_id" });
 
 await sequelize
   .sync({ alter: false })

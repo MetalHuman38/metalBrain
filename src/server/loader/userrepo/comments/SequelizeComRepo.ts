@@ -4,6 +4,7 @@ import { ICommentRepository } from "./ICommentRepository";
 import comments from "../../sequelize/models/comments/comments.model.js";
 import liked_comments from "../../sequelize/models/comments/liked_comment.js";
 import posts from "../../sequelize/models/posts/posts.model.js";
+import users from "../../sequelize/models/usermodels/users.model.js";
 
 export class SequelizeComRepo implements ICommentRepository {
   async createComment(comment: IComment): Promise<IComment> {
@@ -44,8 +45,9 @@ export class SequelizeComRepo implements ICommentRepository {
   async getCommentById(id: number): Promise<IComment> {
     const comment = await comments.findByPk(id);
     if (!comment) {
-      throw new Error("Comment not found");
+      return {} as IComment;
     }
+    console.log(`Comment retrieved: ${comment.toJSON()}`);
     return comment.toJSON() as IComment;
   }
 
@@ -59,6 +61,12 @@ export class SequelizeComRepo implements ICommentRepository {
       limit,
       offset,
       order: [["created_at", "DESC"]],
+      include: [
+        {
+          model: users,
+          attributes: ['username', 'avatarUrl'], // Fetch only the username
+        },
+      ],
     });
     return recentComments.map((comment) => comment.toJSON() as IComment);
   }

@@ -46,12 +46,12 @@ export class CommentUseCase {
     return this.commentRepo.deleteComment(id);
   }
 
-  async likeComment(id: number, user_id: number): Promise<IComment> {
-    return this.commentRepo.likeComment(id, user_id);
+  async likeComment(comment_id: number, user_id: number): Promise<IComment> {
+    return this.commentRepo.likeComment(comment_id, user_id);
   }
 
-  async unlikeComment(id: number, user_id: number): Promise<IComment> {
-    return this.commentRepo.unlikeComment(id, user_id);
+  async unlikeComment(comment_id: number, user_id: number): Promise<IComment> {
+    return this.commentRepo.unlikeComment(comment_id, user_id);
   }
 
   async getCommentLikes(id: number): Promise<number[]> {
